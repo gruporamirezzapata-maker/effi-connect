@@ -20,6 +20,7 @@ export type ItemMenu = {
 // que todavía no está ("pronto"). Las de solo dueño van en "Solo para ti".
 export const MENU_PRINCIPAL: ItemMenu[] = [
   { href: "/", label: "Datos", emoji: "🛒", estado: "vivo", modulo: "resumen" },
+  { href: "/despachos", label: "Despachos", emoji: "📦", estado: "vivo", modulo: "guias", noProveeduria: true },
   { href: "/oficina", label: "Disp. en Oficina", emoji: "🏤", estado: "vivo", modulo: "oficina", noProveeduria: true },
   { href: "/novedades", label: "Novedades", emoji: "⚠️", estado: "vivo", modulo: "novedades", noProveeduria: true },
   { href: "/agente", label: "Agente", emoji: "🤖", estado: "vivo", modulo: "automatizacion" },
