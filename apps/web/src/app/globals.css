@@ -1,20 +1,21 @@
 @import "tailwindcss";
 
-/* Estilo Effi Connect: negro profundo, brillos azules (referencia Flowra). */
+/* Estilo Grupo RZ (mismo de la app de despachos): oscuro, fuente Sora y verde intenso como acento. */
 :root {
-  --bg: #04060a;
-  --panel: #0a0e16;
-  --panel-2: #0e1420;
-  --line: rgb(255 255 255 / 0.07);
-  --line-strong: rgb(255 255 255 / 0.12);
-  --text: #eef2f8;
-  --muted: #8a94a8;
-  --blue: #2f7bff;
-  --blue-2: #5aa2ff;
-  --cyan: #45c8ff;
+  --bg: #141414;
+  --panel: #1c1c1c;
+  --panel-2: #232323;
+  --line: rgb(255 255 255 / 0.08);
+  --line-strong: rgb(255 255 255 / 0.14);
+  --text: #f5f5f5;
+  --muted: #999999;
+  --blue: #05e901;
+  --blue-2: #3cf53a;
+  --cyan: #8af58a;
   --green: #2fd28f;
   --amber: #ffb547;
   --red: #ff5a6a;
+  --on-primary: #0a0a0a;
 }
 
 @theme inline {
@@ -30,8 +31,8 @@
   --color-green: var(--green);
   --color-amber: var(--amber);
   --color-red: var(--red);
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-grotesk);
+  --font-sans: var(--font-sora);
+  --font-display: var(--font-sora);
   --font-mono: var(--font-space-mono);
 }
 
@@ -42,24 +43,29 @@ html {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-inter), system-ui, sans-serif;
+  font-family: var(--font-sora), system-ui, sans-serif;
   min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Brillo azul de fondo, como en la referencia. */
+h1, h2, h3 { letter-spacing: -0.02em; }
+
+/* Fondo: brillo verde suave y cuadrícula tenue, como la portada de despachos. */
 .glow-bg {
   background:
-    radial-gradient(60rem 28rem at 50% -8rem, rgb(47 123 255 / 0.28), transparent 70%),
-    radial-gradient(30rem 30rem at 100% 40%, rgb(69 200 255 / 0.07), transparent 70%),
-    radial-gradient(30rem 30rem at 0% 70%, rgb(47 123 255 / 0.06), transparent 70%),
+    radial-gradient(55rem 26rem at 80% -6rem, rgb(5 233 1 / 0.09), transparent 70%),
+    radial-gradient(40rem 30rem at 0% 100%, rgb(255 255 255 / 0.03), transparent 70%),
+    linear-gradient(rgb(255 255 255 / 0.025) 1px, transparent 1px) 0 0 / 64px 64px,
+    linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px) 0 0 / 64px 64px,
     var(--bg);
+  background-attachment: fixed;
 }
 
 .card {
-  background: linear-gradient(180deg, rgb(255 255 255 / 0.035), rgb(255 255 255 / 0.01)), var(--panel);
+  background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 1.1rem;
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 20px 40px -24px rgb(0 0 0 / 0.8);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px -28px rgb(0 0 0 / 0.9);
 }
 
 .card-glow {
@@ -72,7 +78,7 @@ body {
   inset: -1px;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(140deg, rgb(90 162 255 / 0.55), rgb(255 255 255 / 0.04) 40%, rgb(47 123 255 / 0.25));
+  background: linear-gradient(140deg, rgb(5 233 1 / 0.45), rgb(255 255 255 / 0.04) 40%, rgb(5 233 1 / 0.15));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -80,15 +86,25 @@ body {
   z-index: -1;
 }
 
+/* Botón principal: verde con texto oscuro, mayúsculas y espaciado ancho. */
 .btn-primary {
-  background: linear-gradient(180deg, #4b8dff, #2a6cf0);
-  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.12) inset, 0 8px 24px -8px rgb(47 123 255 / 0.7);
+  background: var(--blue);
+  color: var(--on-primary) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  border-radius: 8px !important;
+  transition: background 0.15s, transform 0.1s;
 }
+.btn-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--blue) 88%, #000); }
+.btn-primary:active:not(:disabled) { transform: scale(0.97); }
+/* Botones sólidos del acento: el texto blanco no se lee sobre verde. */
+.bg-blue.text-white, .bg-blue-2.text-white { color: var(--on-primary) !important; }
 
 .num {
-  font-family: var(--font-grotesk), var(--font-inter), sans-serif;
+  font-family: var(--font-sora), sans-serif;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
 .tabla th {
@@ -149,7 +165,7 @@ body {
   animation: respira 3.2s ease-in-out infinite;
 }
 @keyframes entra {
-  from { opacity: 0; transform: translateY(-6px); background: rgb(47 123 255 / 0.18); }
+  from { opacity: 0; transform: translateY(-6px); background: rgb(5 233 1 / 0.14); }
   to { opacity: 1; transform: none; background: transparent; }
 }
 .entra {
@@ -203,8 +219,8 @@ body {
 }
 
 /* Barra para correr a la derecha las tablas anchas (Disponible en oficina): gruesa y visible para el mouse. */
-.barra-x { scrollbar-width: auto; scrollbar-color: rgb(120 160 255 / 0.55) rgb(255 255 255 / 0.04); }
+.barra-x { scrollbar-width: auto; scrollbar-color: rgb(5 233 1 / 0.45) rgb(255 255 255 / 0.04); }
 .barra-x::-webkit-scrollbar { height: 14px; }
 .barra-x::-webkit-scrollbar-track { background: rgb(255 255 255 / 0.04); }
-.barra-x::-webkit-scrollbar-thumb { background: rgb(120 160 255 / 0.5); border-radius: 999px; border: 3px solid transparent; background-clip: padding-box; }
-.barra-x::-webkit-scrollbar-thumb:hover { background-color: rgb(120 160 255 / 0.8); }
+.barra-x::-webkit-scrollbar-thumb { background: rgb(5 233 1 / 0.4); border-radius: 999px; border: 3px solid transparent; background-clip: padding-box; }
+.barra-x::-webkit-scrollbar-thumb:hover { background-color: rgb(5 233 1 / 0.7); }
