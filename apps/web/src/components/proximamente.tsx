@@ -6,9 +6,8 @@ const FUENTE = {
 
 export function Proximamente({ titulo, emoji, fuentes, secciones }: { titulo: string; emoji: string; fuentes: (keyof typeof FUENTE)[]; secciones: string[] }) {
   return (
-    <div className="pt-8">
-      <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">
-        <span aria-hidden className="mr-2">{emoji}</span>
+    <div className="pt-6 sm:pt-10" data-emoji={emoji}>
+      <h1 className="fu text-5xl sm:text-6xl lg:text-[5rem] font-light leading-[0.95] tracking-tight">
         {titulo}
       </h1>
       <p className="text-sm text-muted mt-1.5">Pestaña en construcción</p>

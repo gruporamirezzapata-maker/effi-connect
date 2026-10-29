@@ -7,7 +7,7 @@ export default async function WalletEnVivoPage() {
   return (
     <div className="pt-8">
       <div className="mb-5">
-        <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">🪙 Wallet en vivo</h1>
+        <h1 className="fu text-5xl sm:text-6xl lg:text-[5rem] font-light leading-[0.95] tracking-tight">Wallet en vivo</h1>
         <p className="text-sm text-muted mt-1.5">
           Saldo de cada wallet Effi en su moneda, en tiempo real: cada entrega pagada lo sube y cada flete, costo o retiro lo baja.
         </p>

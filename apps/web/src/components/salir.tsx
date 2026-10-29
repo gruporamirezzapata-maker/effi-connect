@@ -13,7 +13,7 @@ export function Salir({ email }: { email: string }) {
         router.refresh();
       }}
       title={email}
-      className="rounded-full border border-line px-3 py-1.5 text-xs text-muted hover:text-text transition-colors"
+      className="border-b border-blue pb-1 text-xs uppercase tracking-[0.18em] text-text hover:text-blue transition-colors"
     >
       Salir
     </button>

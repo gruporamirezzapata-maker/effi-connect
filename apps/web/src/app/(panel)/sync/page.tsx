@@ -26,7 +26,7 @@ export default async function SyncPage() {
   return (
     <div className="pt-8 space-y-3">
       <div className="mb-6">
-        <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">🔄 Estado de los datos</h1>
+        <h1 className="fu text-5xl sm:text-6xl lg:text-[5rem] font-light leading-[0.95] tracking-tight">Estado de los datos</h1>
         <p className="text-sm text-muted mt-1.5">
           Effi → Supabase cada minuto por API. Webhooks recibidos: {entero(webhooks ?? 0)} (Effi aún no los envía).
         </p>

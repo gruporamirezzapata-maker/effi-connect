@@ -35,7 +35,7 @@ export default async function PanelLayout({ children }: LayoutProps<"/">) {
   const opciones = esOwner ? (lista ?? []).map((x) => x.nombre as string) : null;
 
   return (
-    <div className="lg:flex">
+    <div className="min-h-dvh">
       <Suspense>
         <Sidebar acceso={usuario} email={usuario.email} sociedad={sociedad} ultimoSync={haceCuanto(ultimo as string | null)}
           sociedades={opciones} vista={(yo?.sociedad_vista as string | null) ?? null} porAceptar={porAceptar ?? 0}
@@ -43,7 +43,7 @@ export default async function PanelLayout({ children }: LayoutProps<"/">) {
           soloProveeduria={!!cuentas?.length && cuentas.every((c) => c.tipo === "proveeduria")} />
       </Suspense>
       {tieneModulo(usuario, "automatizacion") && <AgenteFlotante esOwner={esOwner} />}
-      <main className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 pb-16 max-w-[1400px]">{children}</main>
+      <main className="min-w-0 px-4 sm:px-8 lg:px-16 pt-24 pb-20 max-w-[1600px]">{children}</main>
     </div>
   );
 }

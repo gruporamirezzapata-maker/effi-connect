@@ -13,7 +13,7 @@ export default async function UsuariosPage() {
   return (
     <>
       <div className="pt-8 mb-6">
-        <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">👥 Usuarios y permisos</h1>
+        <h1 className="fu text-5xl sm:text-6xl lg:text-[5rem] font-light leading-[0.95] tracking-tight">Usuarios y permisos</h1>
         <p className="text-sm text-muted mt-1.5">
           Comparte el link de registro; cada persona queda pendiente hasta que tú le digas qué sociedad, tiendas y módulos puede ver.
         </p>

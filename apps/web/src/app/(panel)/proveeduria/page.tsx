@@ -28,7 +28,7 @@ export default async function ProveeduriaPage({ searchParams }: PageProps<"/prov
   return (
     <div className="pt-8 space-y-4">
       <div>
-        <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">🏭 Proveeduría</h1>
+        <h1 className="fu text-5xl sm:text-6xl lg:text-[5rem] font-light leading-[0.95] tracking-tight">Proveeduría</h1>
         <p className="text-sm text-muted mt-1.5">
           La proveeduría · lo que nos compran las tiendas, una empresa a la vez (nunca se suman). Cifras de Effi, actualizadas cada 30 min
           {actualizado ? ` · última ${haceCuanto(actualizado)}` : ""}.

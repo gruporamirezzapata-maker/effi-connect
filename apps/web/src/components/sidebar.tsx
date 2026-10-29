@@ -2,19 +2,22 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, type ReactNode } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Menu, X } from "lucide-react";
 import { MENU_EN_VIVO, MENU_PRINCIPAL, MENU_PRONTO, type ItemMenu } from "@/lib/menu";
 import { esSocio, tieneModulo, type Acceso } from "@/lib/modulos";
 import { Logo } from "./ui";
 import { Salir } from "./salir";
 
+// Navegación estilo Grupo RZ: barra fija arriba (logo, accesos principales y botón Menú) y un menú a pantalla completa
+// con secciones numeradas. Mismas reglas de acceso que el menú lateral original.
+const ATAJOS = ["/", "/oficina", "/novedades", "/global"];
+
 export function Sidebar({ acceso, email, ultimoSync, sociedad, sociedades, vista, porAceptar = 0, conProveeduria = false, soloProveeduria = false }: {
   acceso: Acceso; email: string; ultimoSync: string; sociedad: string; sociedades: string[] | null; vista: string | null;
-  porAceptar?: number; // registros nuevos esperando que el dueño los acepte
-  conProveeduria?: boolean; // ve alguna empresa de proveeduría 
-  soloProveeduria?: boolean; // solo ve empresas de proveeduría: no le salen los módulos de tiendas que no necesita
+  porAceptar?: number;
+  conProveeduria?: boolean;
+  soloProveeduria?: boolean;
 }) {
   const esOwner = acceso.rol === "owner";
   const path = usePathname();
@@ -22,8 +25,6 @@ export function Sidebar({ acceso, email, ultimoSync, sociedad, sociedades, vista
   const router = useRouter();
   const [abierto, setAbierto] = useState(false);
   const [cambiando, start] = useTransition();
-  // Dueño: qué sociedad mira. Se guarda en su usuario y la base filtra todo por esa sociedad; el país elegido se suelta
-  // porque puede ser de otra sociedad.
   async function verSociedad(s: string) {
     const { error } = await createClient().rpc("app_ver_sociedad", { p_sociedad: s || null });
     if (error) return;
@@ -32,113 +33,152 @@ export function Sidebar({ acceso, email, ultimoSync, sociedad, sociedades, vista
   const qs = sp.toString() ? `?${sp.toString()}` : "";
 
   useEffect(() => setAbierto(false), [path]);
+  useEffect(() => {
+    if (!abierto) return;
+    const esc = (e: KeyboardEvent) => e.key === "Escape" && setAbierto(false);
+    document.addEventListener("keydown", esc);
+    document.body.style.overflow = "hidden";
+    return () => { document.removeEventListener("keydown", esc); document.body.style.overflow = ""; };
+  }, [abierto]);
 
-  const item = (it: ItemMenu) => {
-    if (it.soloOwner && !esOwner) return null;
-    if (it.soloSocios && !esSocio(acceso)) return null;
-    if (it.soloProveeduria && !conProveeduria) return null;
-    if (it.noProveeduria && soloProveeduria && !esOwner) return null;
-    if (it.modulo && !tieneModulo(acceso, it.modulo)) return null;
-    const activo = it.href === "/" ? path === "/" : path.startsWith(it.href);
+  const visible = (it: ItemMenu) => {
+    if (it.soloOwner && !esOwner) return false;
+    if (it.soloSocios && !esSocio(acceso)) return false;
+    if (it.soloProveeduria && !conProveeduria) return false;
+    if (it.noProveeduria && soloProveeduria && !esOwner) return false;
+    if (it.modulo && !tieneModulo(acceso, it.modulo)) return false;
+    return true;
+  };
+  const esActivo = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
+  const todos = [...MENU_PRINCIPAL, ...MENU_EN_VIVO, ...MENU_PRONTO].filter(visible);
+  const actual = todos.find((it) => esActivo(it.href));
+  const atajos = MENU_PRINCIPAL.filter((it) => ATAJOS.includes(it.href) && visible(it));
+
+  // Numeración continua en el menú completo (01, 02…), como las tarjetas de servicios del estilo.
+  let n = 0;
+  const tarjeta = (it: ItemMenu) => {
+    n += 1;
+    const activo = esActivo(it.href);
     return (
-      <Link
-        key={it.href}
-        href={`${it.href}${qs}`}
-        aria-current={activo ? "page" : undefined}
-        className={`group flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors ${
-          activo ? "bg-blue/15 text-text shadow-[inset_2px_0_0_var(--blue-2)]" : "text-muted hover:text-text hover:bg-white/[0.04]"
-        }`}
-      >
-        <span className="w-5 text-center text-base leading-none" aria-hidden>{it.emoji}</span>
-        <span className="flex-1 truncate">{it.label}</span>
-        {it.estado === "pronto" && <span className="text-[10px] rounded-full border border-line px-1.5 py-0.5 text-muted">pronto</span>}
-        {it.href === "/usuarios" && porAceptar > 0 && <span className="text-[10px] font-bold rounded-full bg-amber px-1.5 py-0.5 text-black">{porAceptar}</span>}
+      <Link key={it.href} href={`${it.href}${qs}`} aria-current={activo ? "page" : undefined}
+        className={`group relative flex flex-col gap-1.5 border-l pl-5 py-3 pr-2 transition-colors ${
+          activo ? "border-blue" : "border-white/10 hover:border-white/40"
+        }`}>
+        <span className={`text-[11px] tabular-nums ${activo ? "text-blue" : "text-muted/50"}`}>{String(n).padStart(2, "0")}</span>
+        <span className={`text-lg sm:text-xl font-normal leading-tight tracking-tight transition-colors ${activo ? "text-text" : "text-text/80 group-hover:text-text"}`}>
+          {it.label}
+        </span>
+        <span className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted/70">
+          {it.estado === "pronto" ? "Pronto" : activo ? "Estás aquí" : "Abrir"}
+          {it.href === "/usuarios" && porAceptar > 0 && (
+            <span className="rounded-full bg-amber px-1.5 py-0.5 text-[10px] font-bold tracking-normal text-black">{porAceptar}</span>
+          )}
+        </span>
       </Link>
     );
   };
-
-  const contenido = (
-    <>
-      <div className="flex items-center gap-2.5 px-3 pt-5 pb-4">
-        <Logo />
-        <div className="min-w-0 flex-1">
-          <div className="font-display font-semibold tracking-tight leading-tight">Effi Connect</div>
-          {sociedades ? (
-            <select value={vista ?? ""} onChange={(e) => verSociedad(e.target.value)} disabled={cambiando}
-              aria-label="Qué sociedad ver"
-              className="mt-0.5 -ml-1 max-w-full rounded-md border border-transparent bg-transparent px-1 py-0.5 text-[11px] text-muted hover:border-line hover:text-text focus:border-line">
-              <option value="" className="bg-bg text-text">Todas las sociedades</option>
-              {sociedades.map((s) => <option key={s} value={s} className="bg-bg text-text">{s}</option>)}
-            </select>
-          ) : (
-            <div className="text-[11px] text-muted truncate">{sociedad}</div>
-          )}
-        </div>
-        {tieneModulo(acceso, "guias") && <Link href="/en-vivo" title="Ver la operación en vivo"
-          className={`shrink-0 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors ${
-            path.startsWith("/en-vivo") ? "border-red/60 bg-red/15 text-text" : "border-red/40 text-red hover:bg-red/10"
-          }`}>
-          <span className="pulso size-1.5 rounded-full bg-red shadow-[0_0_8px_var(--red)]" />
-          En vivo
-        </Link>}
-      </div>
-      <nav className="flex-1 overflow-y-auto px-2 space-y-5">
-        <div className="space-y-0.5">{MENU_PRINCIPAL.filter((it) => !it.soloOwner).map(item)}</div>
-        {MENU_EN_VIVO.some((it) => !it.modulo || tieneModulo(acceso, it.modulo)) && (
-          <div>
-            <div className="px-3 pb-1.5 text-[11px] uppercase tracking-wider text-muted/70">En vivo</div>
-            <div className="space-y-0.5">{MENU_EN_VIVO.map(item)}</div>
-          </div>
-        )}
-        <div className="space-y-0.5">{MENU_PRONTO.map(item)}</div>
-        {/* Usuario maestro: lo que nadie más puede ver, sin importar la sociedad. */}
-        {esOwner && (
-          <div className="rounded-xl border border-amber/25 bg-amber/[0.04] py-1.5">
-            <div className="px-3 pb-1.5 pt-0.5 text-[11px] uppercase tracking-wider text-amber/90">👑 Solo para ti</div>
-            {/* Alguien se registró y espera que el dueño le diga qué puede ver. */}
-            {porAceptar > 0 && (
-              <Link href="/usuarios" className="mx-2 mb-1.5 flex items-center gap-2 rounded-lg border border-amber/40 bg-amber/15 px-2.5 py-2 text-xs font-semibold text-amber hover:bg-amber/25">
-                <span className="pulso size-1.5 rounded-full bg-amber shadow-[0_0_8px_var(--amber)]" />
-                {porAceptar === 1 ? "1 registro por aceptar" : `${porAceptar} registros por aceptar`}
-              </Link>
-            )}
-            <div className="space-y-0.5">{MENU_PRINCIPAL.filter((it) => it.soloOwner).map(item)}</div>
-          </div>
-        )}
-      </nav>
-      <div className="border-t border-line p-3 flex items-center justify-between gap-2">
-        <span className="flex items-center gap-1.5 text-xs text-muted" title="Última sincronización con Effi">
-          <span className="pulso size-1.5 rounded-full bg-green shadow-[0_0_8px_var(--green)]" />
-          Effi {ultimoSync}
-        </span>
-        <Salir email={email} />
-      </div>
-    </>
-  );
+  const seccion = (titulo: string, items: ItemMenu[], nota?: ReactNode) => {
+    const lista = items.filter(visible);
+    if (!lista.length) return null;
+    return (
+      <section>
+        <p className="text-[11px] uppercase tracking-[0.25em] text-muted/60 mb-4">{titulo}</p>
+        <div className="h-px bg-white/10 mb-6" />
+        {nota}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">{lista.map(tarjeta)}</div>
+      </section>
+    );
+  };
 
   return (
     <>
-      {/* Celular: barra superior con botón de menú */}
-      <div className="lg:hidden sticky top-0 z-30 flex items-center justify-between px-4 py-3 border-b border-line bg-bg/85 backdrop-blur">
-        <div className="flex items-center gap-2">
+      <header className="fixed inset-x-0 top-0 z-50 flex items-center gap-6 px-4 sm:px-8 lg:px-16 py-4 bg-gradient-to-b from-[#0e0e0e]/95 to-[#0e0e0e]/0 backdrop-blur-sm">
+        <Link href={`/${qs}`} className="flex items-center gap-2.5 shrink-0" aria-label="Inicio">
           <Logo />
-          <span className="font-display font-semibold tracking-tight">Effi Connect</span>
+          <span className="text-lg font-semibold tracking-tight">Effi Connect</span>
+        </Link>
+
+        <nav className="hidden lg:flex flex-1 items-center justify-center gap-9" aria-label="Accesos principales">
+          {atajos.map((it) => (
+            <Link key={it.href} href={`${it.href}${qs}`} aria-current={esActivo(it.href) ? "page" : undefined}
+              className={`text-[13px] uppercase tracking-[0.2em] transition-colors ${
+                esActivo(it.href) ? "text-text" : "text-muted hover:text-text"
+              }`}>
+              {it.label}
+            </Link>
+          ))}
+          {tieneModulo(acceso, "guias") && (
+            <Link href="/en-vivo" className={`inline-flex items-center gap-2 text-[13px] uppercase tracking-[0.2em] transition-colors ${
+              path.startsWith("/en-vivo") ? "text-text" : "text-muted hover:text-text"
+            }`}>
+              <span className="pulso size-1.5 rounded-full bg-red shadow-[0_0_8px_var(--red)]" />
+              En vivo
+            </Link>
+          )}
+        </nav>
+
+        <div className="ml-auto lg:ml-0 flex items-center gap-3">
+          {esOwner && porAceptar > 0 && (
+            <Link href="/usuarios" className="hidden sm:inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-amber">
+              <span className="pulso size-1.5 rounded-full bg-amber" />
+              {porAceptar} por aceptar
+            </Link>
+          )}
+          <button onClick={() => setAbierto(true)} aria-expanded={abierto} aria-controls="menu-completo"
+            className="h-11 rounded-lg bg-[#2e2e2e] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-text transition hover:bg-[#262626] active:scale-[0.97]">
+            Menú
+          </button>
         </div>
-        <button onClick={() => setAbierto(!abierto)} className="rounded-xl border border-line p-2 text-muted hover:text-text" aria-label={abierto ? "Cerrar menú" : "Abrir menú"} aria-expanded={abierto}>
-          {abierto ? <X size={18} /> : <Menu size={18} />}
-        </button>
-      </div>
+      </header>
+
       {abierto && (
-        <div className="lg:hidden fixed inset-0 z-40 flex">
-          <div className="w-72 max-w-[85vw] h-full flex flex-col bg-panel border-r border-line">{contenido}</div>
-          <button className="flex-1 bg-black/50" onClick={() => setAbierto(false)} aria-label="Cerrar menú" />
+        <div id="menu-completo" role="dialog" aria-modal="true" aria-label="Menú" className="fixed inset-0 z-[60] overflow-y-auto bg-[#0b0b0b]/[0.98] backdrop-blur">
+          <div className="flex items-center gap-6 px-4 sm:px-8 lg:px-16 py-4">
+            <div className="flex items-center gap-2.5">
+              <Logo />
+              <span className="text-lg font-semibold tracking-tight">Effi Connect</span>
+            </div>
+            <button onClick={() => setAbierto(false)} autoFocus
+              className="ml-auto h-11 rounded-lg bg-[#2e2e2e] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-text transition hover:bg-[#262626] active:scale-[0.97]">
+              Cerrar
+            </button>
+          </div>
+
+          <div className="px-4 sm:px-8 lg:px-16 pt-10 pb-16 space-y-14 max-w-[1400px]">
+            <div className="fu" style={{ animationDelay: ".05s" }}>
+              <h2 className="text-4xl sm:text-5xl lg:text-[4.5rem] font-light leading-[0.95] tracking-tight">
+                {actual ? actual.label : "Panel"}
+              </h2>
+              <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-muted">
+                {sociedades ? (
+                  <label className="inline-flex items-center gap-3">
+                    <span className="text-[11px] uppercase tracking-[0.2em]">Sociedad</span>
+                    <select value={vista ?? ""} onChange={(e) => verSociedad(e.target.value)} disabled={cambiando}
+                      className="rounded-lg border border-white/15 bg-transparent px-3 py-2 text-sm text-text">
+                      <option value="" className="bg-bg">Todas las sociedades</option>
+                      {sociedades.map((s) => <option key={s} value={s} className="bg-bg">{s}</option>)}
+                    </select>
+                  </label>
+                ) : (
+                  <span>{sociedad}</span>
+                )}
+                <span className="inline-flex items-center gap-2" title="Última sincronización con Effi">
+                  <span className="pulso size-1.5 rounded-full bg-green shadow-[0_0_8px_var(--green)]" />
+                  Effi {ultimoSync}
+                </span>
+                <Salir email={email} />
+              </div>
+            </div>
+
+            <div className="fu" style={{ animationDelay: ".15s" }}>{seccion("Operación", MENU_PRINCIPAL.filter((it) => !it.soloOwner))}</div>
+            <div className="fu" style={{ animationDelay: ".25s" }}>{seccion("En vivo", [{ href: "/en-vivo", label: "Operación en vivo", emoji: "", estado: "vivo", modulo: "guias" }, ...MENU_EN_VIVO])}</div>
+            <div className="fu" style={{ animationDelay: ".35s" }}>{seccion("Próximamente", MENU_PRONTO)}</div>
+            {esOwner && (
+              <div className="fu" style={{ animationDelay: ".45s" }}>{seccion("Solo para el dueño", MENU_PRINCIPAL.filter((it) => it.soloOwner))}</div>
+            )}
+          </div>
         </div>
       )}
-
-      {/* Escritorio: menú lateral fijo */}
-      <aside className="hidden lg:flex sticky top-0 h-dvh w-60 shrink-0 flex-col border-r border-line bg-panel/60 backdrop-blur">
-        {contenido}
-      </aside>
     </>
   );
 }

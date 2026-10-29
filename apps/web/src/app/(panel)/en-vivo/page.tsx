@@ -29,7 +29,7 @@ export default async function EnVivoPage() {
   return (
     <div className="pt-8">
       <div className="mb-5">
-        <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">⚡ En vivo</h1>
+        <h1 className="fu text-5xl sm:text-6xl lg:text-[5rem] font-light leading-[0.95] tracking-tight">En vivo</h1>
         <p className="text-sm text-muted mt-1.5">
           Toda la operación palpitando: cada cambio de estado viaja del país a su estado. Elige todas las tiendas o una sola.
         </p>
