@@ -11,7 +11,7 @@ import { Salir } from "./salir";
 
 // Navegación estilo Grupo RZ: barra fija arriba (logo, accesos principales y botón Menú) y un menú a pantalla completa
 // con secciones numeradas. Mismas reglas de acceso que el menú lateral original.
-const ATAJOS = ["/", "/despachos", "/oficina", "/novedades"];
+const ATAJOS = ["/", "/despachos", "/publicidad", "/oficina", "/novedades"];
 
 export function Sidebar({ acceso, email, ultimoSync, sociedad, sociedades, vista, porAceptar = 0, conProveeduria = false, soloProveeduria = false }: {
   acceso: Acceso; email: string; ultimoSync: string; sociedad: string; sociedades: string[] | null; vista: string | null;
