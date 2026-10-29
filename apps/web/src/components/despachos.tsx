@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 // ---------- Tipos de lo que entrega n8n ----------
 export type GuiaDespacho = {
@@ -213,6 +214,65 @@ function GraficaB({ dias, a, b }: { dias: string[]; a: number[]; b: number[] }) 
   );
 }
 
+// ---------- Revisión de Coordinadora (marcas compartidas en Supabase: tabla despachos_revisadas) ----------
+// Coordinadora no deja consultar en bloque (CAPTCHA), así que el equipo revisa guía por guía en su página y deja la marca.
+// «Ya la recogieron» vale hasta que la guía salga de la lista; «Sigue sin recoger» vale solo el día en que se marcó.
+const CUENTA = "GRUPO_RZ_CO";
+const URL_COORD = (g: string) => `https://coordinadora.com/rastreo/rastreo-de-guia/detalle-de-rastreo-de-guia/?guia=${g}`;
+const esCoord = (t: string) => /COORDINADORA/i.test(t);
+type EstadoMarca = "recogida" | "sin_recoger";
+type Marca = { estado: EstadoMarca; por: string; en: string };
+const diaBogota = (iso: string) => new Date(iso).toLocaleDateString("en-CA", { timeZone: "America/Bogota" });
+const horaBogota = (iso: string) => new Date(iso).toLocaleString("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+const vigente = (m: Marca | undefined, hoy: string) => !!m && (m.estado === "recogida" || diaBogota(m.en) === hoy);
+
+function useMarcas() {
+  const [marcas, setMarcas] = useState<Record<string, Marca>>({});
+  const [listo, setListo] = useState(false);
+  const [error, setError] = useState("");
+  const cargar = useCallback(async () => {
+    const { data, error: e } = await createClient().from("despachos_revisadas").select("guia, estado, marcada_por, marcada_en").eq("cuenta", CUENTA);
+    if (e) { setError("No se pudieron leer las marcas de revisión."); return; }
+    const m: Record<string, Marca> = {};
+    for (const r of data ?? []) m[r.guia] = { estado: r.estado as EstadoMarca, por: r.marcada_por, en: r.marcada_en };
+    setMarcas(m); setListo(true); setError("");
+  }, []);
+  useEffect(() => {
+    cargar();
+    // Al volver de la pestaña de Coordinadora se traen las marcas del resto del equipo.
+    const alVolver = () => { if (document.visibilityState === "visible") cargar(); };
+    document.addEventListener("visibilitychange", alVolver);
+    return () => document.removeEventListener("visibilitychange", alVolver);
+  }, [cargar]);
+  const marcar = useCallback(async (guia: string, estado: EstadoMarca | null) => {
+    const sb = createClient();
+    const antes = marcas[guia];
+    if (estado === null) {
+      setMarcas((x) => { const y = { ...x }; delete y[guia]; return y; });
+      const { error: e } = await sb.from("despachos_revisadas").delete().eq("cuenta", CUENTA).eq("guia", guia);
+      if (e) { setMarcas((x) => (antes ? { ...x, [guia]: antes } : x)); return false; }
+      return true;
+    }
+    const { data: u } = await sb.auth.getUser();
+    const fila = { cuenta: CUENTA, guia, estado, marcada_por: u.user?.email ?? "", marcada_en: new Date().toISOString() };
+    setMarcas((x) => ({ ...x, [guia]: { estado, por: fila.marcada_por, en: fila.marcada_en } }));
+    const { error: e } = await sb.from("despachos_revisadas").upsert(fila, { onConflict: "cuenta,guia" });
+    if (e) { setMarcas((x) => { const y = { ...x }; if (antes) y[guia] = antes; else delete y[guia]; return y; }); return false; }
+    return true;
+  }, [marcas]);
+  return { marcas, listo, error, marcar };
+}
+
+function EtiquetaMarca({ m, hoy }: { m?: Marca; hoy: string }) {
+  if (!m || !vigente(m, hoy)) return <span className="text-[11px] uppercase tracking-[0.16em] text-muted/70">Sin revisar{m ? " hoy" : ""}</span>;
+  const quien = m.por.split("@")[0];
+  return m.estado === "recogida"
+    ? <span className="text-[11px] uppercase tracking-[0.16em] text-blue">Revisada · ya la recogieron <span className="normal-case tracking-normal text-muted">({quien}, {horaBogota(m.en)})</span></span>
+    : <span className="text-[11px] uppercase tracking-[0.16em] text-amber">Revisada · sigue sin recoger <span className="normal-case tracking-normal text-muted">({quien}, {horaBogota(m.en)})</span></span>;
+}
+
+const BTN_GRIS = "h-9 rounded-lg bg-[#2e2e2e] px-4 text-[11px] font-semibold uppercase tracking-[0.16em] hover:bg-[#262626] active:scale-[0.97] transition disabled:opacity-40";
+
 // ---------- Pantalla ----------
 export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; error: string | null }) {
   const router = useRouter();
@@ -221,6 +281,8 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
   const [aviso, setAviso] = useState("");
   const s = useMemo(() => (datos ? construir(datos) : null), [datos]);
   const avisar = (t: string) => { setAviso(t); setTimeout(() => setAviso(""), 1800); };
+  const { marcas, listo, error: errMarcas, marcar } = useMarcas();
+  const [actual, setActual] = useState<string | null>(null);
   const actualizar = <button onClick={() => start(() => router.refresh())} disabled={actualizando}
     className="btn-primary h-11 px-7 text-xs disabled:opacity-50">{actualizando ? "Leyendo Effi…" : "Actualizar"}</button>;
 
@@ -242,6 +304,25 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
   const bajarProv = (g: Grupo) => guardarLibro((X) => {
     const wb = X.utils.book_new(); X.utils.book_append_sheet(wb, hoja(X, COLS_PROV, W_PROV, g.filas, filaProv), "Pendientes"); return wb;
   }, `Despachos ${limpiarNombre(g.nombre)} ${s.hoy}.xlsx`).catch(() => avisar("No se pudo crear el archivo"));
+  // Coordinadora: la más antigua primero; las que ya tienen marca vigente salen de la cola.
+  const coord = s.todas.filter((f) => esCoord(f.transp)).sort((x, y) => y.horas - x.horas);
+  const cola = coord.filter((f) => !vigente(marcas[f.guia], s.hoy));
+  const revisadas = coord.length - cola.length;
+  const recogidasCoord = coord.filter((f) => marcas[f.guia]?.estado === "recogida").length;
+  const filaActual = actual ? coord.find((f) => f.guia === actual) ?? null : null;
+  // Abre la guía en una sola pestaña con nombre fijo (no se llenan 59 pestañas). Se llama directo desde el clic.
+  const abrir = (guia: string) => { window.open(URL_COORD(guia), "coordinadora"); setActual(guia); };
+  const siguiente = (saltar?: string) => {
+    const f = cola.find((x) => x.guia !== saltar);
+    if (f) abrir(f.guia); else { setActual(null); avisar("No quedan guías de Coordinadora por revisar"); }
+  };
+  const marcarYSeguir = (guia: string, estado: EstadoMarca) => {
+    siguiente(guia);
+    marcar(guia, estado).then((ok) => { if (!ok) avisar("No se guardó la marca. Revisa tu conexión."); });
+  };
+  const marcarSolo = (guia: string, estado: EstadoMarca | null) =>
+    marcar(guia, estado).then((ok) => avisar(ok ? (estado ? "Guía marcada" : "Marca quitada") : "No se guardó la marca"));
+
   const copiar = async (g: Grupo) => {
     try { await navigator.clipboard.writeText(mensaje(g, plantilla)); avisar("Mensaje copiado"); } catch { avisar("No se pudo copiar"); }
   };
@@ -278,6 +359,44 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
         {s.incompletas > 0 && <p className="border-l-2 border-amber pl-4 py-1">{s.incompletas} guías no se pudieron completar con el detalle de Effi (marcadas con «…»). Revísalas antes de enviar.</p>}
       </div>
 
+      {/* Revisión de Coordinadora */}
+      {coord.length > 0 && (
+        <section className="mt-12">
+          <p className="text-[11px] uppercase tracking-[0.25em] text-muted/60 mb-4">Revisar Coordinadora</p>
+          <div className="h-px bg-white/10 mb-6" />
+          <div className="flex flex-wrap items-end gap-x-10 gap-y-4">
+            <div>
+              <div className="num text-5xl font-light leading-none">{revisadas}<span className="text-muted/60 text-3xl"> / {coord.length}</span></div>
+              <div className="text-xs text-muted mt-2">revisadas hoy · {recogidasCoord} {recogidasCoord === 1 ? "ya la recogieron" : "ya las recogieron"} · faltan {cola.length}</div>
+            </div>
+            <button onClick={() => siguiente()} disabled={!listo || cola.length === 0} className="btn-primary h-11 px-7 text-xs disabled:opacity-40">
+              {cola.length === 0 ? "Todas revisadas" : filaActual ? "Saltar a la siguiente" : `Revisar siguiente (${cola.length})`}
+            </button>
+          </div>
+          <p className="text-sm text-muted mt-4 max-w-3xl">
+            Cada clic abre la guía en la página de Coordinadora, siempre en la misma pestaña. Mira el estado, vuelve aquí y márcala: la marca la ve todo el equipo.
+            «Sigue sin recoger» vale solo por hoy; mañana la guía vuelve a la cola.
+          </p>
+          {errMarcas && <p className="mt-3 border-l-2 border-red pl-4 py-1 text-sm">{errMarcas}</p>}
+          {filaActual && (
+            <div className="card mt-6 p-5 max-w-3xl">
+              <div className="flex flex-wrap items-baseline justify-between gap-3">
+                <a href={URL_COORD(filaActual.guia)} target="coordinadora" rel="noreferrer" className="text-2xl font-light tabular-nums underline decoration-blue/60 underline-offset-4 hover:text-blue">{filaActual.guia} ↗</a>
+                <span className="text-sm text-muted">{filaActual.prov} · {filaActual.dias} d</span>
+              </div>
+              <p className="mt-1 text-sm">{filaActual.dest}</p>
+              <p className="mt-1 text-sm text-muted">{filaActual.prod}</p>
+              <div className="mt-2"><EtiquetaMarca m={marcas[filaActual.guia]} hoy={s.hoy} /></div>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <button onClick={() => marcarYSeguir(filaActual.guia, "recogida")} className="btn-primary h-11 px-6 text-xs">Ya la recogieron · siguiente</button>
+                <button onClick={() => marcarYSeguir(filaActual.guia, "sin_recoger")} className="h-11 rounded-lg bg-[#2e2e2e] px-6 text-xs font-semibold uppercase tracking-[0.18em] hover:bg-[#262626] active:scale-[0.97] transition">Sigue sin recoger · siguiente</button>
+                <button onClick={() => setActual(null)} className="h-11 px-3 text-xs uppercase tracking-[0.18em] text-muted hover:text-text">Terminar</button>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
       {/* Proveedores */}
       <section className="mt-12">
         <p className="text-[11px] uppercase tracking-[0.25em] text-muted/60 mb-4">Por proveedor</p>
@@ -311,12 +430,22 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
                   <div key={f.guia} className={`py-3 pl-4 text-sm border-l-2 ${f.vencida ? "border-red bg-red/[0.06]" : "border-transparent"}`}>
                     <div className="flex justify-between gap-3">
                       {/COORDINADORA/i.test(f.transp)
-                        ? <a href={`https://coordinadora.com/rastreo/rastreo-de-guia/detalle-de-rastreo-de-guia/?guia=${f.guia}`} target="_blank" rel="noreferrer" title="Ver el estado real en Coordinadora" className="font-semibold tabular-nums underline decoration-blue/60 underline-offset-4 hover:text-blue">{f.guia} ↗</a>
+                        ? <a href={URL_COORD(f.guia)} target="coordinadora" onClick={() => setActual(f.guia)} rel="noreferrer" title="Ver el estado real en Coordinadora" className="font-semibold tabular-nums underline decoration-blue/60 underline-offset-4 hover:text-blue">{f.guia} ↗</a>
                         : <b className="font-semibold tabular-nums">{f.guia}</b>}
                       <span className="whitespace-nowrap text-muted">{f.transp} · {f.dias} d</span>
                     </div>
                     <p className="mt-0.5 font-medium">{f.dest}{f.tipo ? ` · ${f.tipo}` : ""}</p>
                     <p className="mt-0.5 text-muted">{f.prod}{f.vencida && <span className="font-semibold text-red"> · pasó 48 h</span>}</p>
+                    {esCoord(f.transp) && (
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <EtiquetaMarca m={marcas[f.guia]} hoy={s.hoy} />
+                        <span className="flex-1" />
+                        <button onClick={() => abrir(f.guia)} className={BTN_GRIS}>Abrir</button>
+                        {marcas[f.guia]?.estado !== "recogida" && <button onClick={() => marcarSolo(f.guia, "recogida")} disabled={!listo} className={BTN_GRIS}>Ya la recogieron</button>}
+                        {!(marcas[f.guia]?.estado === "sin_recoger" && vigente(marcas[f.guia], s.hoy)) && <button onClick={() => marcarSolo(f.guia, "sin_recoger")} disabled={!listo} className={BTN_GRIS}>Sin recoger</button>}
+                        {marcas[f.guia] && <button onClick={() => marcarSolo(f.guia, null)} disabled={!listo} className="h-9 px-2 text-[11px] uppercase tracking-[0.16em] text-muted hover:text-text">Quitar</button>}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
