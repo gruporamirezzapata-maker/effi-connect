@@ -6,7 +6,8 @@ import { Encabezado } from "@/components/encabezado";
 import { GastoPorDia } from "@/components/charts";
 import { Kpi, Panel, TablaScroll, Vacio } from "@/components/ui";
 import { TablaCuentasAds, type CuentaAds } from "@/components/publicidad-cuentas";
-import { Doble, cop, enLocal, portafolio } from "@/components/publicidad-montos";
+import { cop, enLocal, portafolio } from "@/components/publicidad-montos";
+import { ExploradorAds, type AnuncioAds } from "@/components/publicidad-explorador";
 
 // 📢 Publicidad: todo el gasto de Meta que tiene Effi Connect, por país, día, cuenta publicitaria y campaña. Casi todo llega
 // por la API (meta-gasto, cada hora, un token por portafolio); lo que no, quedó de los CSV del BM. Meta cobra en COP;
@@ -42,7 +43,11 @@ export default async function PublicidadPage({ searchParams }: PageProps<"/publi
   const hasta = f.hasta > hoy ? hoy : f.hasta;
 
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("publicidad_resumen", { p_cuentas: f.cuentas, p_desde: f.desde, p_hasta: hasta });
+  const [{ data, error }, { data: ads }] = await Promise.all([
+    supabase.rpc("publicidad_resumen", { p_cuentas: f.cuentas, p_desde: f.desde, p_hasta: hasta }),
+    supabase.rpc("publicidad_anuncios", { p_desde: f.desde, p_hasta: hasta }),
+  ]);
+  const anuncios = (ads as AnuncioAds[] | null) ?? [];
   const r = data as Resumen | null;
   const tiendas = [...(r?.por_tienda ?? [])].sort((a, b) => ordenCuenta(a.cuenta) - ordenCuenta(b.cuenta));
   const paises = tiendas.map((t) => ({ cuenta: t.cuenta, nombre: infoCuenta(t.cuenta).nombre, color: COLOR[infoCuenta(t.cuenta).pais] ?? "#8a94a8", divisa: infoCuenta(t.cuenta).divisa }));
@@ -156,29 +161,10 @@ export default async function PublicidadPage({ searchParams }: PageProps<"/publi
       </Panel>
 
       <Panel
-        titulo="Campañas"
-        detalle={`${entero(r?.campanas_total ?? 0)} campañas con gasto en el periodo${(r?.campanas_total ?? 0) > (r?.campanas.length ?? 0) ? ` · se muestran las ${entero(r?.campanas.length)} de más gasto` : ""}`}
+        titulo="Campañas, conjuntos y anuncios"
+        detalle="Como el Administrador de anuncios: escoge el nivel, filtra por cuenta, campaña o conjunto, o haz clic en una fila para ver su detalle. Se actualiza cada hora."
       >
-        {r?.campanas.length ? (
-          <TablaScroll>
-            <thead>
-              <tr><th>Campaña</th><th>Cuenta</th><th>País</th><th className="text-right">Gasto</th><th className="text-right">Días</th><th className="text-right">Por día</th><th className="text-right">Último día</th></tr>
-            </thead>
-            <tbody>
-              {r.campanas.map((c) => (
-                <tr key={`${c.cuenta_ads}|${c.campana}|${c.cuenta}`}>
-                  <td className="max-w-[28rem] truncate" title={c.campana}>{c.campana}</td>
-                  <td className="text-muted">{c.cuenta_ads}</td>
-                  <td>{infoCuenta(c.cuenta).bandera}</td>
-                  <td className="text-right num"><Doble local={c.local} enCop={c.monto} cuenta={c.cuenta} fuerte /></td>
-                  <td className="text-right num text-muted">{entero(c.dias)}</td>
-                  <td className="text-right num"><Doble local={c.dias && c.local != null ? c.local / c.dias : null} enCop={c.dias ? c.monto / c.dias : 0} cuenta={c.cuenta} /></td>
-                  <td className={`text-right ${c.ultimo === r.ultimo_dia ? "text-green" : "text-muted"}`}>{diaCorto(c.ultimo)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </TablaScroll>
-        ) : <Vacio>Sin campañas con gasto en este periodo.</Vacio>}
+        <ExploradorAds anuncios={anuncios} />
       </Panel>
     </>
   );
