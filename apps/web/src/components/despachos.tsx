@@ -310,7 +310,9 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
                 {g.filas.map((f) => (
                   <div key={f.guia} className={`py-3 pl-4 text-sm border-l-2 ${f.vencida ? "border-red bg-red/[0.06]" : "border-transparent"}`}>
                     <div className="flex justify-between gap-3">
-                      <b className="font-semibold tabular-nums">{f.guia}</b>
+                      {/COORDINADORA/i.test(f.transp)
+                        ? <a href={`https://coordinadora.com/rastreo/rastreo-de-guia/detalle-de-rastreo-de-guia/?guia=${f.guia}`} target="_blank" rel="noreferrer" title="Ver el estado real en Coordinadora" className="font-semibold tabular-nums underline decoration-blue/60 underline-offset-4 hover:text-blue">{f.guia} ↗</a>
+                        : <b className="font-semibold tabular-nums">{f.guia}</b>}
                       <span className="whitespace-nowrap text-muted">{f.transp} · {f.dias} d</span>
                     </div>
                     <p className="mt-0.5 font-medium">{f.dest}{f.tipo ? ` · ${f.tipo}` : ""}</p>
