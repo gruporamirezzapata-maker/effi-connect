@@ -19,9 +19,10 @@ export function Doble({ local, enCop, cuenta, fuerte = false }: { local: number 
   );
 }
 
-// "meta_access_token_joaquin" → "Joaquin"; el primero (sin sufijo) es el portafolio Compras FACIL.
+// "meta_access_token" → Kora Basicos, "meta_access_token_zapi" → Zapi Corp 1; otros: el sufijo con mayúscula.
+const PORTAFOLIOS: Record<string, string> = { "": "Kora Basicos", zapi: "Zapi Corp 1" };
 export const portafolio = (t: string | null) => {
   if (!t) return "—";
   const s = t.replace(/^meta_access_token_?/, "");
-  return s ? s[0].toUpperCase() + s.slice(1) : "Compras FACIL";
+  return PORTAFOLIOS[s] ?? s[0].toUpperCase() + s.slice(1);
 };
