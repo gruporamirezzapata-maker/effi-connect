@@ -220,6 +220,9 @@ function GraficaB({ dias, a, b }: { dias: string[]; a: number[]; b: number[] }) 
 const CUENTA = "GRUPO_RZ_CO";
 const URL_COORD = (g: string) => `https://coordinadora.com/rastreo/rastreo-de-guia/detalle-de-rastreo-de-guia/?guia=${g}`;
 const esCoord = (t: string) => /COORDINADORA/i.test(t);
+// 17track deja ver hasta 40 guías a la vez; fc=100493 es Coordinadora (sin eso no la reconoce).
+const LOTE_17 = 40;
+const URL_17 = (gs: string[]) => `https://t.17track.net/es#nums=${gs.join(",")}&fc=100493`;
 type EstadoMarca = "recogida" | "sin_recoger";
 type Marca = { estado: EstadoMarca; por: string; en: string };
 const diaBogota = (iso: string) => new Date(iso).toLocaleDateString("en-CA", { timeZone: "America/Bogota" });
@@ -260,7 +263,18 @@ function useMarcas() {
     if (e) { setMarcas((x) => { const y = { ...x }; if (antes) y[guia] = antes; else delete y[guia]; return y; }); return false; }
     return true;
   }, [marcas]);
-  return { marcas, listo, error, marcar };
+  const marcarVarias = useCallback(async (guias: string[], estado: EstadoMarca) => {
+    if (!guias.length) return true;
+    const sb = createClient();
+    const { data: u } = await sb.auth.getUser();
+    const en = new Date().toISOString(), por = u.user?.email ?? "";
+    const { error: e } = await sb.from("despachos_revisadas").upsert(
+      guias.map((guia) => ({ cuenta: CUENTA, guia, estado, marcada_por: por, marcada_en: en })), { onConflict: "cuenta,guia" });
+    if (e) return false;
+    setMarcas((x) => { const y = { ...x }; for (const g of guias) y[g] = { estado, por, en }; return y; });
+    return true;
+  }, []);
+  return { marcas, listo, error, marcar, marcarVarias };
 }
 
 function EtiquetaMarca({ m, hoy }: { m?: Marca; hoy: string }) {
@@ -281,8 +295,9 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
   const [aviso, setAviso] = useState("");
   const s = useMemo(() => (datos ? construir(datos) : null), [datos]);
   const avisar = (t: string) => { setAviso(t); setTimeout(() => setAviso(""), 1800); };
-  const { marcas, listo, error: errMarcas, marcar } = useMarcas();
+  const { marcas, listo, error: errMarcas, marcar, marcarVarias } = useMarcas();
   const [actual, setActual] = useState<string | null>(null);
+  const [pegadas, setPegadas] = useState("");
   const actualizar = <button onClick={() => start(() => router.refresh())} disabled={actualizando}
     className="btn-primary h-11 px-7 text-xs disabled:opacity-50">{actualizando ? "Leyendo Effi…" : "Actualizar"}</button>;
 
@@ -320,6 +335,17 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
     siguiente(guia);
     marcar(guia, estado).then((ok) => { if (!ok) avisar("No se guardó la marca. Revisa tu conexión."); });
   };
+  // Lotes de 40 para 17track: todas las de Coordinadora menos las ya marcadas como recogidas.
+  const para17 = coord.filter((f) => marcas[f.guia]?.estado !== "recogida").map((f) => f.guia);
+  const lotes = Array.from({ length: Math.ceil(para17.length / LOTE_17) }, (_, i) => para17.slice(i * LOTE_17, (i + 1) * LOTE_17));
+  const enLista = new Set(coord.map((f) => f.guia));
+  const numPegados = [...new Set(pegadas.match(/\d{8,}/g) ?? [])];
+  const validos = numPegados.filter((g) => enLista.has(g));
+  const marcarPegadas = () => marcarVarias(validos, "recogida").then((ok) => {
+    if (!ok) return avisar("No se guardaron las marcas");
+    setPegadas("");
+    avisar(`${validos.length} ${validos.length === 1 ? "guía marcada" : "guías marcadas"} como recogidas`);
+  });
   const marcarSolo = (guia: string, estado: EstadoMarca | null) =>
     marcar(guia, estado).then((ok) => avisar(ok ? (estado ? "Guía marcada" : "Marca quitada") : "No se guardó la marca"));
 
@@ -366,17 +392,38 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
           <div className="h-px bg-white/10 mb-6" />
           <div className="flex flex-wrap items-end gap-x-10 gap-y-4">
             <div>
-              <div className="num text-5xl font-light leading-none">{revisadas}<span className="text-muted/60 text-3xl"> / {coord.length}</span></div>
-              <div className="text-xs text-muted mt-2">revisadas hoy · {recogidasCoord} {recogidasCoord === 1 ? "ya la recogieron" : "ya las recogieron"} · faltan {cola.length}</div>
+              <div className="num text-5xl font-light leading-none">{recogidasCoord}<span className="text-muted/60 text-3xl"> / {coord.length}</span></div>
+              <div className="text-xs text-muted mt-2">ya las recogieron según la revisión · {revisadas} revisadas hoy</div>
             </div>
-            <button onClick={() => siguiente()} disabled={!listo || cola.length === 0} className="btn-primary h-11 px-7 text-xs disabled:opacity-40">
+            {lotes.map((l, i) => (
+              <a key={i} href={URL_17(l)} target="_blank" rel="noreferrer" className="btn-primary inline-flex h-11 items-center px-6 text-xs">
+                Ver en 17track{lotes.length > 1 ? ` · ${i * LOTE_17 + 1}–${i * LOTE_17 + l.length}` : ` · ${l.length}`}
+              </a>
+            ))}
+          </div>
+          <ol className="mt-5 max-w-3xl list-decimal space-y-1 pl-5 text-sm text-muted">
+            <li>Abre el botón de 17track: carga hasta 40 guías de Coordinadora a la vez, ya con el resultado.</li>
+            <li>Las que dicen <b className="text-text">«Info received» / «En posesión del remitente»</b> siguen sin recoger. Todas las demás (En tránsito, Entregado…) ya salieron.</li>
+            <li>Copia los números de las que ya salieron y pégalos abajo. Quedan marcadas «Ya la recogieron» para todo el equipo.</li>
+          </ol>
+          <div className="mt-4 max-w-3xl">
+            <textarea value={pegadas} onChange={(e) => setPegadas(e.target.value)} rows={3} placeholder="Pega aquí las guías que ya salieron (una por línea, con comas o como sea)"
+              className="w-full rounded-lg border border-white/10 bg-panel p-3 text-sm outline-none focus:border-blue" aria-label="Guías que ya salieron" />
+            <div className="mt-2 flex flex-wrap items-center gap-4">
+              <button onClick={marcarPegadas} disabled={!listo || validos.length === 0} className="btn-primary h-10 px-6 text-xs disabled:opacity-40">
+                Marcar {validos.length || ""} como recogidas
+              </button>
+              {numPegados.length > validos.length && (
+                <span className="text-xs text-amber">{numPegados.length - validos.length} no están en la lista de Coordinadora pendientes y se ignoran.</span>
+              )}
+            </div>
+          </div>
+          <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-muted">
+            <span>¿17track no responde? Revisa una por una en Coordinadora:</span>
+            <button onClick={() => siguiente()} disabled={!listo || cola.length === 0} className={BTN_GRIS}>
               {cola.length === 0 ? "Todas revisadas" : filaActual ? "Saltar a la siguiente" : `Revisar siguiente (${cola.length})`}
             </button>
           </div>
-          <p className="text-sm text-muted mt-4 max-w-3xl">
-            Cada clic abre la guía en la página de Coordinadora, siempre en la misma pestaña. Mira el estado, vuelve aquí y márcala: la marca la ve todo el equipo.
-            «Sigue sin recoger» vale solo por hoy; mañana la guía vuelve a la cola.
-          </p>
           {errMarcas && <p className="mt-3 border-l-2 border-red pl-4 py-1 text-sm">{errMarcas}</p>}
           {filaActual && (
             <div className="card mt-6 p-5 max-w-3xl">
