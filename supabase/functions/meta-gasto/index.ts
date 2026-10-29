@@ -9,6 +9,8 @@
 //   las cuentas que ve cada token se traen con ese token.
 // El país de entrega decide la tienda; si Meta lo da como "unknown", la etiqueta de la campaña: (COL), (EC), (GT)…
 // Las cuentas en otra divisa se pasan a COP con la TRM del mes (app_trm_mes).
+// Además, por cuenta, el detalle por anuncio y día (meta_anuncios_dia, para el explorador de Publicidad): gasto, impresiones,
+// clics en el enlace, compras del píxel y conversaciones iniciadas. Si eso falla, el gasto por país se guarda igual.
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -59,6 +61,15 @@ async function todo(url: string, token: string) {
   return filas;
 }
 
+// Una sola cifra de compras: Meta repite la misma compra con varios nombres (omni_purchase, purchase, píxel).
+const COMPRA = ['omni_purchase', 'purchase', 'offsite_conversion.fb_pixel_purchase'];
+const CONVERSACION = ['onsite_conversion.messaging_conversation_started_7d'];
+function accion(lista: unknown, tipos: string[]) {
+  const l = Array.isArray(lista) ? lista as { action_type?: string; value?: string }[] : [];
+  for (const t of tipos) { const a = l.find((x) => x.action_type === t); if (a) return Number(a.value ?? 0); }
+  return 0;
+}
+
 function paisMeta(pais: string, campana: string) {
   const p = (pais ?? '').toUpperCase();
   if (/^[A-Z]{2}$/.test(p)) return p;
@@ -91,6 +102,9 @@ async function sincronizar(tokens: { nombre: string; token: string }[], desde: s
     return 0;
   };
   const filas: { pais: string; fecha: string; cuenta_ads: string; campana: string; monto_cop: number }[] = [];
+  const anuncios: Record<string, unknown>[] = [];
+  const cuentasAnuncios: string[] = [];
+  const erroresAnuncios: Record<string, string> = {};
   const nombres: string[] = [];
   const resumen: Record<string, unknown> = {};
   const sinPais = new Set<string>();
@@ -117,6 +131,23 @@ async function sincronizar(tokens: { nombre: string; token: string }[], desde: s
       if (divisa !== 'COP' && datos.length && !aCop(divisa, desde)) throw new Error(`Sin TRM para ${divisa}`);
       nombres.push(nombre);
       resumen[nombre] = Math.round(total);
+      try {
+        const pa = new URLSearchParams({
+          level: 'ad', time_increment: '1', limit: '500',
+          fields: 'campaign_id,campaign_name,adset_id,adset_name,ad_id,ad_name,spend,impressions,inline_link_clicks,actions,action_values',
+          time_range: JSON.stringify({ since: desde, until: hasta }),
+        });
+        for (const r of await todo(`${GRAPH}/act_${id}/insights?${pa}`, token)) {
+          const fecha = String(r.date_start), factor = aCop(divisa, fecha);
+          anuncios.push({
+            anuncio_id: String(r.ad_id), fecha, cuenta_ads_id: id, cuenta_ads: nombre,
+            campana_id: r.campaign_id ?? null, campana: r.campaign_name ?? null, conjunto_id: r.adset_id ?? null, conjunto: r.adset_name ?? null, anuncio: r.ad_name ?? null,
+            gasto_cop: Number(r.spend ?? 0) * factor, impresiones: Number(r.impressions ?? 0), clics: Number(r.inline_link_clicks ?? 0),
+            compras: accion(r.actions, COMPRA), valor_compras_cop: accion(r.action_values, COMPRA) * factor, conversaciones: accion(r.actions, CONVERSACION),
+          });
+        }
+        cuentasAnuncios.push(id);
+      } catch (e) { erroresAnuncios[nombre] = (e as Error).message; }
       await sb(`meta_cuentas_ads?on_conflict=id`, { method: 'POST', headers: { Prefer: 'resolution=merge-duplicates' },
         body: JSON.stringify([{ id, nombre, divisa, zona: c.timezone_name ?? null, estado: c.account_status ?? null, token: portafolio, ultima_sync: new Date().toISOString(), ultimo_error: null }]) });
     } catch (e) {
@@ -126,7 +157,12 @@ async function sincronizar(tokens: { nombre: string; token: string }[], desde: s
     }
   }
   const guardado = nombres.length ? await rpc('meta_guardar', { p_filas: filas, p_cuentas_ads: nombres, p_desde: desde, p_hasta: hasta }) : null;
-  return { desde, hasta, portafolios: tokens.map((t) => t.nombre), tokens_con_error: tokensConError, cuentas: resumen, guardado, sin_pais: [...sinPais].slice(0, 10) };
+  let anunciosGuardados: unknown = null;
+  try {
+    anunciosGuardados = cuentasAnuncios.length ? await rpc('meta_guardar_anuncios', { p_filas: anuncios, p_cuentas: cuentasAnuncios, p_desde: desde, p_hasta: hasta }) : 0;
+  } catch (e) { erroresAnuncios._guardar = (e as Error).message; }
+  return { desde, hasta, portafolios: tokens.map((t) => t.nombre), tokens_con_error: tokensConError, cuentas: resumen, guardado,
+    anuncios: { filas: anunciosGuardados, errores: erroresAnuncios }, sin_pais: [...sinPais].slice(0, 10) };
 }
 
 Deno.serve(async (req) => {
