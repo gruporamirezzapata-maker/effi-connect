@@ -153,7 +153,7 @@ function imagen(g: Grupo, hoy: string) {
   ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, W, H);
   ctx.fillStyle = "#141414"; ctx.font = "600 26px Sora, Calibri, Arial, sans-serif"; ctx.fillText(g.nombre, 24, 40);
   ctx.fillStyle = "#5A5A5A"; ctx.font = "400 16px Sora, Calibri, Arial, sans-serif";
-  ctx.fillText(`${g.filas.length}${g.filas.length === 1 ? " guía pendiente" : " guías pendientes"} · corte ${corta(hoy)}${g.vencidas ? ` · en rojo: ${g.vencidas} pasaron 48 h` : ""}`, 24, 66);
+  ctx.fillText(`${g.filas.length}${g.filas.length === 1 ? " guía pendiente" : " guías pendientes"} · corte ${corta(hoy)}${g.vencidas ? ` · en rojo: ${g.vencidas} ${g.vencidas === 1 ? "pasó" : "pasaron"} 48 h` : ""}`, 24, 66);
   let y = head;
   ctx.fillStyle = "#EDEDED"; ctx.fillRect(24, y, W - 48, th);
   ctx.fillStyle = "#141414"; ctx.font = font("600");
@@ -262,7 +262,7 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
           <div>
             <div className="text-[11px] uppercase tracking-[0.2em] text-muted">Guías pendientes</div>
             <div className="num text-6xl font-light mt-3 leading-none">{s.todas.length}</div>
-            <div className="text-xs text-muted mt-3">{s.grupos.filter((g) => !g.propio).length} proveedores · {ven} pasaron 48 h</div>
+            <div className="text-xs text-muted mt-3">{s.grupos.filter((g) => !g.propio).length} proveedores · {ven} {ven === 1 ? "pasó" : "pasaron"} 48 h</div>
           </div>
           <div className="mt-4"><GraficaA a={a} /></div>
         </div>
@@ -291,7 +291,7 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
                 <div className="truncate text-xl font-normal tracking-tight">{g.nombre}</div>
                 <div className="mt-1 text-sm text-muted">
                   {g.filas.length} {g.filas.length === 1 ? "guía" : "guías"} · desde el {corta(g.antiguo)}
-                  {g.vencidas > 0 && <span className="text-red"> · {g.vencidas} pasaron 48 h</span>}
+                  {g.vencidas > 0 && <span className="text-red"> · {g.vencidas} {g.vencidas === 1 ? "pasó" : "pasaron"} 48 h</span>}
                 </div>
               </div>
               <span className={`num text-2xl font-light ${g.vencidas ? "text-red" : g.max >= 3 ? "text-amber" : "text-text"}`}>{g.max} d</span>
