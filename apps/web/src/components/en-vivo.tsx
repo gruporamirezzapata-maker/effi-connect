@@ -49,7 +49,7 @@ const ESTADOS: { id: Cat; label: string }[] = [
 const ETAPAS: { id: Etapa; label: string; color: string }[] = [
   { id: "ORDEN", label: "Órdenes", color: "#ff6ad5" }, // rosado: distinto del naranja de las novedades
   { id: "REMISION", label: "Remisiones", color: "#b48cff" },
-  { id: "GENERADA", label: "Guías generadas", color: "#c9d3ea" },
+  { id: "GENERADA", label: "Guías generadas", color: "#8f9bb3" },
 ];
 const NODOS = [
   ...ETAPAS.map((e, i) => ({ id: e.id as string, label: e.label, color: e.color, padre: i ? ETAPAS[i - 1].id : undefined })),

@@ -207,7 +207,7 @@ function GraficaB({ dias, a, b }: { dias: string[]; a: number[]; b: number[] }) 
         <g>
           <line x1={X(oi)} x2={X(oi)} y1={T} y2={H - B} stroke="#e2574c" strokeOpacity=".35" strokeDasharray="2 3" />
           <circle cx={X(oi)} cy={Y(a[oi])} r="3.6" fill="#FBE7E2" stroke="#e2574c" strokeWidth="2" />
-          <text x={Math.min(Math.max(X(oi), L + 40), W - R - 40)} y={T + 6} textAnchor="middle" fontSize="10" fontWeight="600" fill="#f5f5f5">{corta(dias[oi])} · la más vieja</text>
+          <text x={Math.min(Math.max(X(oi), L + 40), W - R - 40)} y={T + 6} textAnchor="middle" fontSize="10" fontWeight="600" fill="#111111">{corta(dias[oi])} · la más vieja</text>
         </g>
       )}
     </svg>
