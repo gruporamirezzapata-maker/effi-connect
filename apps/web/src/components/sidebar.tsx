@@ -13,9 +13,10 @@ import { Salir } from "./salir";
 // con secciones numeradas. Mismas reglas de acceso que el menú lateral original.
 const ATAJOS = ["/", "/despachos", "/publicidad", "/oficina", "/novedades"];
 
-export function Sidebar({ acceso, email, ultimoSync, sociedad, sociedades, vista, porAceptar = 0, conProveeduria = false, soloProveeduria = false }: {
+export function Sidebar({ acceso, email, ultimoSync, sociedad, sociedades, vista, porAceptar = 0, pagosPendientes = 0, conProveeduria = false, soloProveeduria = false }: {
   acceso: Acceso; email: string; ultimoSync: string; sociedad: string; sociedades: string[] | null; vista: string | null;
   porAceptar?: number;
+  pagosPendientes?: number;
   conProveeduria?: boolean;
   soloProveeduria?: boolean;
 }) {
@@ -70,6 +71,9 @@ export function Sidebar({ acceso, email, ultimoSync, sociedad, sociedades, vista
         </span>
         <span className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-muted/70">
           {it.estado === "pronto" ? "Pronto" : activo ? "Estás aquí" : "Abrir"}
+          {it.href === "/pagos" && pagosPendientes > 0 && (
+            <span className="rounded-full bg-amber px-1.5 py-0.5 text-[10px] font-bold tracking-normal text-black">{pagosPendientes}</span>
+          )}
           {it.href === "/usuarios" && porAceptar > 0 && (
             <span className="rounded-full bg-amber px-1.5 py-0.5 text-[10px] font-bold tracking-normal text-black">{porAceptar}</span>
           )}
@@ -118,6 +122,12 @@ export function Sidebar({ acceso, email, ultimoSync, sociedad, sociedades, vista
         </nav>
 
         <div className="ml-auto lg:ml-0 flex items-center gap-3">
+          {pagosPendientes > 0 && (
+            <Link href="/pagos" className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-amber">
+              <span className="pulso size-1.5 rounded-full bg-amber" />
+              {pagosPendientes} {pagosPendientes === 1 ? "pago" : "pagos"} por verificar
+            </Link>
+          )}
           {esOwner && porAceptar > 0 && (
             <Link href="/usuarios" className="hidden sm:inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-amber">
               <span className="pulso size-1.5 rounded-full bg-amber" />
