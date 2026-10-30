@@ -50,7 +50,7 @@ export default async function PublicidadPage({ searchParams }: PageProps<"/publi
   const anuncios = (ads as AnuncioAds[] | null) ?? [];
   const r = data as Resumen | null;
   const tiendas = [...(r?.por_tienda ?? [])].sort((a, b) => ordenCuenta(a.cuenta) - ordenCuenta(b.cuenta));
-  const paises = tiendas.map((t) => ({ cuenta: t.cuenta, nombre: infoCuenta(t.cuenta).nombre, color: COLOR[infoCuenta(t.cuenta).pais] ?? "#8a94a8", divisa: infoCuenta(t.cuenta).divisa }));
+  const paises = tiendas.map((t) => ({ cuenta: t.cuenta, nombre: infoCuenta(t.cuenta).nombre, color: COLOR[infoCuenta(t.cuenta).pais] ?? "#7c6a66", divisa: infoCuenta(t.cuenta).divisa }));
   const conGasto = r?.por_dia.length ? new Set(r.por_dia.map((d) => d.fecha)).size : 0;
   const apiTotal = (r?.por_cuenta_ads ?? []).filter((c) => c.por_api).reduce((a, c) => a + Number(c.total), 0);
   // Un solo país en otra moneda: todo se muestra en esa moneda (con la TRM del día) y el COP queda de referencia.
