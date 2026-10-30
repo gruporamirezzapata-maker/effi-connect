@@ -30,7 +30,7 @@ export default async function PagosPage() {
             salen sin recaudo. Los que no confirmes no se despachan.
           </p>
         </div>
-        <div className="h-px bg-white/10" />
+        <div className="h-px bg-black/10" />
       </div>
       <PagosVerificar pendientes={(pendientes ?? []) as Pago[]} decididos={(decididos ?? []) as Pago[]} error={error} />
     </>
