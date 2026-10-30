@@ -39,7 +39,7 @@ export default async function DespachosPage() {
             Guías pendientes por despachar de los últimos 30 días, por proveedor. El reporte de siempre, sin descargar nada de Effi, con la revisión de Inter cruzada.
           </p>
         </div>
-        <div className="h-px bg-white/10" />
+        <div className="h-px bg-black/10" />
       </div>
       <Suspense fallback={<Cargando />}>
         <Contenido />
