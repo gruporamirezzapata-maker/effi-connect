@@ -39,15 +39,19 @@ export default async function PanelLayout({ children }: LayoutProps<"/">) {
   const opciones = esOwner ? (lista ?? []).map((x) => x.nombre as string) : null;
 
   return (
-    <div className="min-h-dvh">
-      <Suspense>
-        <Sidebar acceso={usuario} email={usuario.email} sociedad={sociedad} ultimoSync={haceCuanto(ultimo as string | null)}
-          sociedades={opciones} vista={(yo?.sociedad_vista as string | null) ?? null} porAceptar={porAceptar ?? 0} pagosPendientes={pagosPendientes ?? 0}
-          conProveeduria={(cuentas ?? []).some((c) => c.tipo === "proveeduria")}
-          soloProveeduria={!!cuentas?.length && cuentas.every((c) => c.tipo === "proveeduria")} />
-      </Suspense>
+    <div className="min-h-dvh sm:px-5 lg:px-8 sm:py-6">
+      {/* El panel vive dentro de un marco tipo iPhone: barra coral arriba y una hoja durazno con el contenido. */}
+      <div className="marco mx-auto max-w-[1600px]">
+        <Suspense>
+          <Sidebar acceso={usuario} email={usuario.email} sociedad={sociedad} ultimoSync={haceCuanto(ultimo as string | null)}
+            sociedades={opciones} vista={(yo?.sociedad_vista as string | null) ?? null} porAceptar={porAceptar ?? 0} pagosPendientes={pagosPendientes ?? 0}
+            conProveeduria={(cuentas ?? []).some((c) => c.tipo === "proveeduria")}
+            soloProveeduria={!!cuentas?.length && cuentas.every((c) => c.tipo === "proveeduria")} />
+        </Suspense>
+        <main className="hoja min-w-0 px-4 sm:px-8 lg:px-12 pt-6 sm:pt-8 pb-20">{children}</main>
+        <span className="indicador" aria-hidden />
+      </div>
       {tieneModulo(usuario, "automatizacion") && <AgenteFlotante esOwner={esOwner} />}
-      <main className="min-w-0 px-4 sm:px-8 lg:px-16 pt-24 pb-20 max-w-[1600px]">{children}</main>
     </div>
   );
 }
