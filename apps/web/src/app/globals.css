@@ -1,21 +1,25 @@
 @import "tailwindcss";
 
-/* Estilo Grupo RZ (mismo de la app de despachos): oscuro, fuente Sora y verde intenso como acento. */
+/* Estilo Grupo RZ · durazno: fondo durazno claro, coral de marca, píldoras, hojas con esquinas muy redondas y
+   entradas escalonadas. Coral = marca y acciones; las alertas usan un rojo y un ámbar oscuros aparte para no confundirse. */
 :root {
-  --bg: #141414;
-  --panel: #1c1c1c;
-  --panel-2: #232323;
-  --line: rgb(255 255 255 / 0.08);
-  --line-strong: rgb(255 255 255 / 0.14);
-  --text: #f5f5f5;
-  --muted: #999999;
-  --blue: #05e901;
-  --blue-2: #3cf53a;
-  --cyan: #8af58a;
-  --green: #2fd28f;
-  --amber: #ffb547;
-  --red: #ff5a6a;
-  --on-primary: #0a0a0a;
+  --bg: #f6e2de;
+  --panel: #fbe7e2;
+  --panel-2: #f2cfcb;
+  --line: rgb(17 17 17 / 0.08);
+  --line-strong: rgb(17 17 17 / 0.16);
+  --text: #111111;
+  --muted: #7c6a66;
+  --blue: #e2574c;      /* coral de marca (el nombre se conserva para no tocar las clases) */
+  --blue-2: #d6837b;
+  --cyan: #f3b7ae;
+  --green: #1f8a5a;
+  --amber: #b86b00;
+  --red: #a8201a;
+  --on-primary: #ffffff;
+  --sombra: 0 30px 60px -24px rgb(190 120 110 / 0.35);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-pop: cubic-bezier(0.34, 1.5, 0.5, 1);
 }
 
 @theme inline {
@@ -31,80 +35,105 @@
   --color-green: var(--green);
   --color-amber: var(--amber);
   --color-red: var(--red);
-  --font-sans: var(--font-sora);
-  --font-display: var(--font-sora);
+  --font-sans: var(--font-sora), -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
+  --font-display: var(--font-sora), -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
   --font-mono: var(--font-space-mono);
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-sora), system-ui, sans-serif;
+  font-family: var(--font-sora), -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3 { letter-spacing: -0.02em; }
+/* Títulos grandes: peso normal con un trazo fino, como el ejemplo. */
+h1 { font-weight: 400 !important; -webkit-text-stroke: 0.6px currentColor; }
 
-/* Fondo: brillo verde suave y cuadrícula tenue, como la portada de despachos. */
+/* Fondo: círculos concéntricos coral fijos detrás de todo. */
 .glow-bg {
-  background:
-    radial-gradient(55rem 26rem at 80% -6rem, rgb(5 233 1 / 0.09), transparent 70%),
-    radial-gradient(40rem 30rem at 0% 100%, rgb(255 255 255 / 0.03), transparent 70%),
-    linear-gradient(rgb(255 255 255 / 0.025) 1px, transparent 1px) 0 0 / 64px 64px,
-    linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px) 0 0 / 64px 64px,
-    var(--bg);
+  background-color: var(--bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Ccircle cx='300' cy='300' r='260' fill='none' stroke='%23e2574c' stroke-opacity='.5'/%3E%3Ccircle cx='300' cy='300' r='180' fill='none' stroke='%23e2574c' stroke-opacity='.7'/%3E%3Ccircle cx='300' cy='300' r='100' fill='%23ffffff' fill-opacity='.55'/%3E%3Ccircle cx='300' cy='300' r='26' fill='%23e2574c' fill-opacity='.85'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right -14rem top -12rem;
+  background-size: 52rem 52rem;
   background-attachment: fixed;
 }
 
+/* Tarjetas: hojas durazno sin borde, esquinas muy redondas y sombra cálida. */
 .card {
   background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  box-shadow: 0 20px 40px -28px rgb(0 0 0 / 0.9);
+  border: 0;
+  border-radius: 28px;
+  box-shadow: var(--sombra);
+  animation: dcRiseSm 0.85s var(--ease) backwards;
 }
+.card .card { box-shadow: none; animation: none; background: var(--panel-2); }
+:is(.grid, .space-y-3, .space-y-4, .space-y-6, .space-y-10) > .card:nth-child(2) { animation-delay: 0.08s; }
+:is(.grid, .space-y-3, .space-y-4, .space-y-6, .space-y-10) > .card:nth-child(3) { animation-delay: 0.16s; }
+:is(.grid, .space-y-3, .space-y-4, .space-y-6, .space-y-10) > .card:nth-child(4) { animation-delay: 0.24s; }
+:is(.grid, .space-y-3, .space-y-4, .space-y-6, .space-y-10) > .card:nth-child(n+5) { animation-delay: 0.32s; }
 
-.card-glow {
-  position: relative;
-  isolation: isolate;
-}
+.card-glow { position: relative; isolation: isolate; }
 .card-glow::before {
   content: "";
   position: absolute;
-  inset: -1px;
+  inset: 0;
   border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(140deg, rgb(5 233 1 / 0.45), rgb(255 255 255 / 0.04) 40%, rgb(5 233 1 / 0.15));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
+  background: radial-gradient(18rem 10rem at 100% 0%, rgb(226 87 76 / 0.18), transparent 70%);
   pointer-events: none;
   z-index: -1;
 }
 
-/* Botón principal: verde con texto oscuro, mayúsculas y espaciado ancho. */
+/* Botón principal: píldora negra con texto blanco. */
 .btn-primary {
-  background: var(--blue);
-  color: var(--on-primary) !important;
-  font-weight: 600 !important;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  border-radius: 8px !important;
-  transition: background 0.15s, transform 0.1s;
+  background: #111111;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  border-radius: 999px !important;
+  transition: background 0.15s, transform 0.15s var(--ease-pop);
 }
-.btn-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--blue) 88%, #000); }
-.btn-primary:active:not(:disabled) { transform: scale(0.97); }
-/* Botones sólidos del acento: el texto blanco no se lee sobre verde. */
-.bg-blue.text-white, .bg-blue-2.text-white { color: var(--on-primary) !important; }
+.btn-primary:hover:not(:disabled) { background: #2a2a2a; }
+.btn-primary:active:not(:disabled) { transform: scale(0.96); }
+/* Botones y fondos sólidos del acento coral: texto blanco. */
+.bg-blue, .bg-blue-2, .bg-red, .bg-green { color: var(--on-primary); }
+.bg-blue.text-black, .bg-blue.text-white { color: var(--on-primary) !important; }
 
-/* Entrada: aparece subiendo 16 px, como en la página de despachos. */
-.fu { opacity: 0; animation: fu 0.6s ease-out forwards; }
-@keyframes fu { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .fu { animation: none; opacity: 1; } }
+/* Píldoras: botones, campos y selectores con esquinas completas, como el ejemplo. */
+button.rounded-lg, button.rounded-xl, button.rounded-md, a.rounded-lg, input.rounded-lg, select.rounded-lg, input.rounded-xl, select.rounded-xl { border-radius: 999px; }
+input, select, textarea { background-color: #ffffff; }
+
+/* Entradas: suben, aparecen o saltan con resorte. */
+@keyframes dcRise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes dcRiseSm { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes dcFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dcInLeft { from { opacity: 0; transform: translateX(-18px); } to { opacity: 1; transform: none; } }
+@keyframes dcPop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: none; } }
+.fu { animation: dcRise 0.85s var(--ease) backwards; }
+.dc-pop { animation: dcPop 0.7s var(--ease-pop) backwards; }
+.dc-left { animation: dcInLeft 0.7s var(--ease) backwards; }
+.dc-fade { animation: dcFade 0.9s ease-out backwards; }
+@media (prefers-reduced-motion: reduce) {
+  .fu, .card, .dc-pop, .dc-left, .dc-fade { animation: none !important; }
+}
+
+/* Visualizaciones pensadas para fondo oscuro (red y mapa en vivo): van dentro de una pantalla oscura redondeada. */
+.pantalla {
+  background: radial-gradient(60rem 30rem at 80% -10%, rgb(226 87 76 / 0.22), transparent 70%), #141414;
+  border-radius: 36px;
+  box-shadow: var(--sombra);
+  --bg: #141414;
+  --text: #f5f5f5;
+  --muted: #a39894;
+  --line: rgb(255 255 255 / 0.1);
+  color: var(--text);
+}
 
 .num {
   font-family: var(--font-sora), sans-serif;
@@ -131,7 +160,7 @@ h1, h2, h3 { letter-spacing: -0.02em; }
   border-bottom: 0;
 }
 .tabla tbody tr:hover {
-  background: rgb(255 255 255 / 0.025);
+  background: rgb(226 87 76 / 0.06);
 }
 
 @keyframes pulso {
@@ -170,7 +199,7 @@ h1, h2, h3 { letter-spacing: -0.02em; }
   animation: respira 3.2s ease-in-out infinite;
 }
 @keyframes entra {
-  from { opacity: 0; transform: translateY(-6px); background: rgb(5 233 1 / 0.14); }
+  from { opacity: 0; transform: translateY(-6px); background: rgb(226 87 76 / 0.16); }
   to { opacity: 1; transform: none; background: transparent; }
 }
 .entra {
@@ -224,8 +253,8 @@ h1, h2, h3 { letter-spacing: -0.02em; }
 }
 
 /* Barra para correr a la derecha las tablas anchas (Disponible en oficina): gruesa y visible para el mouse. */
-.barra-x { scrollbar-width: auto; scrollbar-color: rgb(5 233 1 / 0.45) rgb(255 255 255 / 0.04); }
+.barra-x { scrollbar-width: auto; scrollbar-color: rgb(226 87 76 / 0.45) rgb(17 17 17 / 0.04); }
 .barra-x::-webkit-scrollbar { height: 14px; }
-.barra-x::-webkit-scrollbar-track { background: rgb(255 255 255 / 0.04); }
-.barra-x::-webkit-scrollbar-thumb { background: rgb(5 233 1 / 0.4); border-radius: 999px; border: 3px solid transparent; background-clip: padding-box; }
-.barra-x::-webkit-scrollbar-thumb:hover { background-color: rgb(5 233 1 / 0.7); }
+.barra-x::-webkit-scrollbar-track { background: rgb(17 17 17 / 0.04); }
+.barra-x::-webkit-scrollbar-thumb { background: rgb(226 87 76 / 0.4); border-radius: 999px; border: 3px solid transparent; background-clip: padding-box; }
+.barra-x::-webkit-scrollbar-thumb:hover { background-color: rgb(226 87 76 / 0.7); }
