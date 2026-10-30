@@ -5,7 +5,7 @@ import { haceCuanto } from "@/lib/formato";
 import { Sidebar } from "@/components/sidebar";
 import { SinAcceso } from "@/components/sin-acceso";
 import { AgenteFlotante } from "@/components/agente-flotante";
-import { tieneModulo } from "@/lib/modulos";
+import { esSocio, tieneModulo } from "@/lib/modulos";
 
 export default async function PanelLayout({ children }: LayoutProps<"/">) {
   const supabase = await createClient();
@@ -32,13 +32,17 @@ export default async function PanelLayout({ children }: LayoutProps<"/">) {
       supabase.from("app_usuarios").select("user_id", { count: "exact", head: true }).eq("rol", "pendiente"),
     ])
     : [{ data: null }, { count: 0 }];
+  // Pedidos pagados en Shopify que esperan que el dueño o un socio confirme que llegó la plata (se avisan arriba).
+  const { count: pagosPendientes } = esSocio(usuario)
+    ? await supabase.from("pagos_por_verificar").select("orden_id", { count: "exact", head: true }).eq("estado", "pendiente")
+    : { count: 0 };
   const opciones = esOwner ? (lista ?? []).map((x) => x.nombre as string) : null;
 
   return (
     <div className="min-h-dvh">
       <Suspense>
         <Sidebar acceso={usuario} email={usuario.email} sociedad={sociedad} ultimoSync={haceCuanto(ultimo as string | null)}
-          sociedades={opciones} vista={(yo?.sociedad_vista as string | null) ?? null} porAceptar={porAceptar ?? 0}
+          sociedades={opciones} vista={(yo?.sociedad_vista as string | null) ?? null} porAceptar={porAceptar ?? 0} pagosPendientes={pagosPendientes ?? 0}
           conProveeduria={(cuentas ?? []).some((c) => c.tipo === "proveeduria")}
           soloProveeduria={!!cuentas?.length && cuentas.every((c) => c.tipo === "proveeduria")} />
       </Suspense>
