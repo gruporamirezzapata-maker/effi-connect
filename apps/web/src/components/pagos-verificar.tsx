@@ -132,7 +132,7 @@ export function PagosVerificar({ pendientes, decididos, error }: { pendientes: P
                   </span>
                   <span className="min-w-0 flex-1 truncate">{p.pedido ?? p.orden} · {p.cliente ?? ""} · <span className="text-muted">{exacta(p.fecha_pedido ?? p.creado)}</span></span>
                   <span className="num">{cop(p.total)}</span>
-                  <span className="text-xs text-muted">{(p.decidido_por ?? "").split("@")[0]} · {hora(p.decidido_en)}</span>
+                  <span className="text-xs text-muted">{(p.decidido_por ?? "").split("@")[0]} · {hora(p.decidido_en)}{p.nota ? ` · ${p.nota}` : ""}</span>
                   <button disabled={enCurso === k} onClick={() => decidir(p, "pendiente")}
                     className="text-[11px] uppercase tracking-[0.16em] text-muted hover:text-text disabled:opacity-40">
                     Deshacer
