@@ -30,7 +30,7 @@ const semRecuperacion = (v: number | null): Semaforo => (v == null ? "nada" : v 
 function Vistas({ vista, c }: { vista: "bandeja" | "analisis"; c: string }) {
   const tab = (on: boolean) => `rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-colors ${on ? "bg-blue/25 text-text" : "text-muted hover:text-text"}`;
   return (
-    <div className="inline-flex rounded-xl border border-line bg-white/[0.02] p-0.5 mb-4">
+    <div className="inline-flex rounded-xl border border-line bg-black/[0.02] p-0.5 mb-4">
       <Link href={`/novedades?c=${c}`} className={tab(vista === "bandeja")}>📞 Bandeja</Link>
       <Link href={`/novedades?c=${c}&vista=analisis`} className={tab(vista === "analisis")}>📊 Análisis</Link>
     </div>
