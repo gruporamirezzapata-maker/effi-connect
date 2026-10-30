@@ -9,12 +9,18 @@ export type Pago = {
   cliente: string | null; telefono: string | null; ciudad: string | null; total: number; pasarela: string | null;
   estado_shopify: string | null; estado: "pendiente" | "llego" | "no_llego"; nota: string | null;
   decidido_por: string | null; decidido_en: string | null; creado: string;
+  fecha_pedido: string | null; productos: string | null; direccion: string | null; documento: string | null; referencia: string | null;
 };
 
 const cop = (v: number) => "$" + Math.round(Number(v) || 0).toLocaleString("es-CO");
 const hora = (iso: string | null) => iso
   ? new Date(iso).toLocaleString("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })
   : "";
+// Fecha y hora exacta en Bogotá, con segundos, para cruzarla con el movimiento en Bold o en el banco.
+const exacta = (iso: string | null) => iso
+  ? new Date(iso).toLocaleString("es-CO", { timeZone: "America/Bogota", weekday: "short", day: "numeric", month: "short", year: "numeric",
+      hour: "numeric", minute: "2-digit", second: "2-digit", hour12: true })
+  : "Sin fecha";
 const horasDesde = (iso: string) => Math.floor((Date.now() - new Date(iso).getTime()) / 3_600_000);
 const BTN = "h-11 rounded-lg px-5 text-xs font-semibold uppercase tracking-[0.16em] active:scale-[0.97] transition disabled:opacity-40";
 
@@ -77,8 +83,24 @@ export function PagosVerificar({ pendientes, decididos, error }: { pendientes: P
                       </div>
                     </div>
                   </div>
+                  <div className="rounded-2xl bg-black/[0.04] px-4 py-3">
+                    <div className="text-[11px] uppercase tracking-[0.18em] text-muted/70">Pedido hecho</div>
+                    <div className="num text-base mt-0.5">{exacta(p.fecha_pedido ?? p.creado)}</div>
+                    {!p.fecha_pedido && <div className="text-[11px] text-amber mt-0.5">Hora en que llegó al panel, no la del pedido</div>}
+                  </div>
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
+                    <dt className="text-muted">Pago</dt>
+                    <dd>{p.pasarela ?? "?"}{p.estado_shopify ? ` · ${p.estado_shopify}` : ""}</dd>
+                    <dt className="text-muted">Valor exacto</dt>
+                    <dd className="num">{cop(p.total)}</dd>
+                    {p.productos && (<><dt className="text-muted">Productos</dt><dd className="break-words">{p.productos.split(" | ").map((x, i) => <div key={i}>{x}</div>)}</dd></>)}
+                    {p.documento && (<><dt className="text-muted">Documento</dt><dd className="num">{p.documento}</dd></>)}
+                    {p.telefono && (<><dt className="text-muted">Teléfono</dt><dd className="num"><a className="underline" href={`https://wa.me/57${p.telefono.replace(/\D/g, "").slice(-10)}`} target="_blank" rel="noreferrer">{p.telefono}</a></dd></>)}
+                    {p.direccion && (<><dt className="text-muted">Dirección</dt><dd className="break-words">{p.direccion}{p.ciudad ? `, ${p.ciudad}` : ""}</dd></>)}
+                    {p.referencia && (<><dt className="text-muted">Referencia</dt><dd className="num break-all">{p.referencia}</dd></>)}
+                  </dl>
                   <div className="text-xs text-muted">
-                    Shopify: {p.estado_shopify ?? "?"}{p.pasarela ? ` · ${p.pasarela}` : ""}. Busca {cop(p.total)} en Bold o en el banco.
+                    Busca en Bold o en el banco un pago de {cop(p.total)} a nombre de {p.cliente ?? "la clienta"}, cerca de esa hora. Si no lo encuentras, no lo aceptes.
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <button disabled={enCurso === k} onClick={() => decidir(p, "llego")} className={`${BTN} bg-blue text-black hover:bg-blue-2`}>
@@ -108,7 +130,7 @@ export function PagosVerificar({ pendientes, decididos, error }: { pendientes: P
                   <span className={`text-[11px] uppercase tracking-[0.16em] w-28 ${p.estado === "llego" ? "text-blue" : "text-amber"}`}>
                     {p.estado === "llego" ? "Llegó" : "No ha llegado"}
                   </span>
-                  <span className="min-w-0 flex-1 truncate">{p.pedido ?? p.orden} · {p.cliente ?? ""}</span>
+                  <span className="min-w-0 flex-1 truncate">{p.pedido ?? p.orden} · {p.cliente ?? ""} · <span className="text-muted">{exacta(p.fecha_pedido ?? p.creado)}</span></span>
                   <span className="num">{cop(p.total)}</span>
                   <span className="text-xs text-muted">{(p.decidido_por ?? "").split("@")[0]} · {hora(p.decidido_en)}</span>
                   <button disabled={enCurso === k} onClick={() => decidir(p, "pendiente")}
