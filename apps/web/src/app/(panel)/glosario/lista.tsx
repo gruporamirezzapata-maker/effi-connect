@@ -30,7 +30,7 @@ export function GlosarioLista({ terminos }: { terminos: Termino[] }) {
                   <h3 className="font-medium">{t.t}</h3>
                   <p className="text-sm text-text/85 mt-1.5 leading-relaxed">{t.d}</p>
                   {t.f && (
-                    <p className="text-xs mt-3 rounded-lg bg-white/[0.03] border border-line px-3 py-2">
+                    <p className="text-xs mt-3 rounded-lg bg-black/[0.03] border border-line px-3 py-2">
                       <span className="text-muted">Cómo se calcula: </span>
                       {t.f}
                     </p>
