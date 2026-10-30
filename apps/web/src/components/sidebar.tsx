@@ -63,7 +63,7 @@ export function Sidebar({ acceso, email, ultimoSync, sociedad, sociedades, vista
     return (
       <Link key={it.href} href={`${it.href}${qs}`} aria-current={activo ? "page" : undefined}
         className={`group relative flex flex-col gap-1.5 border-l pl-5 py-3 pr-2 transition-colors ${
-          activo ? "border-blue" : "border-white/10 hover:border-white/40"
+          activo ? "border-blue" : "border-black/10 hover:border-black/40"
         }`}>
         <span className={`text-[11px] tabular-nums ${activo ? "text-blue" : "text-muted/50"}`}>{String(n).padStart(2, "0")}</span>
         <span className={`text-lg sm:text-xl font-normal leading-tight tracking-tight transition-colors ${activo ? "text-text" : "text-text/80 group-hover:text-text"}`}>
@@ -87,7 +87,7 @@ export function Sidebar({ acceso, email, ultimoSync, sociedad, sociedades, vista
     return (
       <section>
         <p className="text-[11px] uppercase tracking-[0.25em] text-muted/60 mb-4">{titulo}</p>
-        <div className="h-px bg-white/10 mb-6" />
+        <div className="h-px bg-black/10 mb-6" />
         {nota}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">{lista.map(tarjeta)}</div>
       </section>
@@ -96,7 +96,7 @@ export function Sidebar({ acceso, email, ultimoSync, sociedad, sociedades, vista
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 flex items-center gap-6 px-4 sm:px-8 lg:px-16 py-4 bg-gradient-to-b from-[#0e0e0e]/95 to-[#0e0e0e]/0 backdrop-blur-sm">
+      <header className="fixed inset-x-0 top-0 z-50 flex items-center gap-6 px-4 sm:px-8 lg:px-16 py-4 bg-gradient-to-b from-bg/95 to-bg/0 backdrop-blur-sm">
         <Link href={`/${qs}`} className="flex items-center gap-2.5 shrink-0" aria-label="Inicio">
           <Logo />
           <span className="text-lg font-semibold tracking-tight">Effi Connect</span>
@@ -135,21 +135,21 @@ export function Sidebar({ acceso, email, ultimoSync, sociedad, sociedades, vista
             </Link>
           )}
           <button onClick={() => setAbierto(true)} aria-expanded={abierto} aria-controls="menu-completo"
-            className="h-11 rounded-lg bg-[#2e2e2e] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-text transition hover:bg-[#262626] active:scale-[0.97]">
+            className="h-11 rounded-lg bg-transparent ring-[1.5px] ring-inset ring-text px-6 text-xs font-semibold uppercase tracking-[0.18em] text-text transition hover:bg-black/5 active:scale-[0.97]">
             Menú
           </button>
         </div>
       </header>
 
       {abierto && (
-        <div id="menu-completo" role="dialog" aria-modal="true" aria-label="Menú" className="fixed inset-0 z-[60] overflow-y-auto bg-[#0b0b0b]/[0.98] backdrop-blur">
+        <div id="menu-completo" role="dialog" aria-modal="true" aria-label="Menú" className="fixed inset-0 z-[60] overflow-y-auto bg-bg/[0.98] backdrop-blur">
           <div className="flex items-center gap-6 px-4 sm:px-8 lg:px-16 py-4">
             <div className="flex items-center gap-2.5">
               <Logo />
               <span className="text-lg font-semibold tracking-tight">Effi Connect</span>
             </div>
             <button onClick={() => setAbierto(false)} autoFocus
-              className="ml-auto h-11 rounded-lg bg-[#2e2e2e] px-6 text-xs font-semibold uppercase tracking-[0.18em] text-text transition hover:bg-[#262626] active:scale-[0.97]">
+              className="ml-auto h-11 rounded-lg bg-transparent ring-[1.5px] ring-inset ring-text px-6 text-xs font-semibold uppercase tracking-[0.18em] text-text transition hover:bg-black/5 active:scale-[0.97]">
               Cerrar
             </button>
           </div>
@@ -164,7 +164,7 @@ export function Sidebar({ acceso, email, ultimoSync, sociedad, sociedades, vista
                   <label className="inline-flex items-center gap-3">
                     <span className="text-[11px] uppercase tracking-[0.2em]">Sociedad</span>
                     <select value={vista ?? ""} onChange={(e) => verSociedad(e.target.value)} disabled={cambiando}
-                      className="rounded-lg border border-white/15 bg-transparent px-3 py-2 text-sm text-text">
+                      className="rounded-lg border border-black/15 bg-transparent px-3 py-2 text-sm text-text">
                       <option value="" className="bg-bg">Todas las sociedades</option>
                       {sociedades.map((s) => <option key={s} value={s} className="bg-bg">{s}</option>)}
                     </select>

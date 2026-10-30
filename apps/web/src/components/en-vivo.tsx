@@ -380,7 +380,7 @@ export function EnVivo({ cuentas: TIENDAS, logo }: { cuentas: string[]; logo: st
           </button>
         ))}
         <div className="ml-auto flex flex-wrap items-center gap-2">
-          <div className="inline-flex rounded-xl border border-line bg-white/[0.02] p-0.5 font-mono text-[11px]">
+          <div className="inline-flex rounded-xl border border-line bg-black/[0.02] p-0.5 font-mono text-[11px]">
             {VENTANAS.map((v) => (
               <button key={v.min} onClick={() => elegirVentana(v.min)}
                 className={`rounded-lg px-2.5 py-1 font-semibold uppercase tracking-wider transition-colors ${!dias && ventana === v.min ? "bg-blue/25 text-text shadow-[inset_0_0_0_1px_rgb(47_123_255_/_0.6)]" : "text-muted hover:text-text"}`}>
@@ -407,8 +407,8 @@ export function EnVivo({ cuentas: TIENDAS, logo }: { cuentas: string[]; logo: st
       {error && <p className="text-xs text-amber" role="status">{error}</p>}
 
       <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_23rem] items-start">
-        <div ref={escenario} className={`card p-0 min-w-0 ${completa === "ventana" ? "fixed inset-0 z-[60]" : "relative"} ${grande ? "flex flex-col justify-center overflow-auto" : "overflow-hidden"}`}
-          style={grande ? { background: "var(--bg)", borderRadius: 0 } : undefined}>
+        <div ref={escenario} className={`card pantalla p-0 min-w-0 ${completa === "ventana" ? "fixed inset-0 z-[60]" : "relative"} ${grande ? "flex flex-col justify-center overflow-auto" : "overflow-hidden"}`}
+          style={grande ? { borderRadius: 0 } : undefined}>
           <button onClick={pantallaCompleta} title={grande ? "Salir de pantalla completa (Esc)" : "Ver el metaverso en pantalla completa"}
             aria-label={grande ? "Salir de pantalla completa" : "Pantalla completa"}
             className="absolute right-2 top-2 z-20 rounded-lg border border-line bg-bg/70 p-1.5 text-muted backdrop-blur hover:text-text hover:border-blue/50">
@@ -553,7 +553,7 @@ function Contador({ titulo, valor, color, sub }: { titulo: string; valor: number
 
 function Dato({ titulo, valor, color }: { titulo: string; valor: string; color: string }) {
   return (
-    <div className="rounded-xl bg-white/[0.03] px-2 py-2">
+    <div className="rounded-xl bg-black/[0.03] px-2 py-2">
       <div className="num text-xl font-semibold" style={{ color }}>{valor}</div>
       <div className="text-[10px] text-muted">{titulo}</div>
     </div>

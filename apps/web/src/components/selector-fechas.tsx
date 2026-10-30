@@ -65,7 +65,7 @@ function Mes({ ym, hoy, minimo, inicio, fin, hover, onDia, onHover }: {
                     ? "bg-blue/15 text-text"
                     : futuro
                       ? "text-muted/40 cursor-not-allowed"
-                      : "rounded-lg hover:bg-white/[0.07]"
+                      : "rounded-lg hover:bg-black/[0.07]"
               } ${iso === hoy && !extremo ? "ring-1 ring-inset ring-blue-2/60 rounded-lg" : ""}`}
             >
               {i + 1}
@@ -146,7 +146,7 @@ export function SelectorFechas({ desde, hasta, rangos, hoy, onAplicar, inactivo,
         onClick={() => (abierto ? cerrar() : abrir())}
         aria-expanded={abierto}
         aria-haspopup="dialog"
-        className={`flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs transition-colors ${abierto ? "border-blue/50 bg-blue/15 text-text" : inactivo ? "border-line text-muted hover:text-text hover:bg-white/[0.04]" : "border-line text-text hover:border-white/20 hover:bg-white/[0.04]"}`}
+        className={`flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs transition-colors ${abierto ? "border-blue/50 bg-blue/15 text-text" : inactivo ? "border-line text-muted hover:text-text hover:bg-black/[0.04]" : "border-line text-text hover:border-black/20 hover:bg-black/[0.04]"}`}
       >
         <CalendarDays size={14} className="text-blue-2" />
         <span className="num">{etiqueta}</span>
@@ -162,7 +162,7 @@ export function SelectorFechas({ desde, hasta, rangos, hoy, onAplicar, inactivo,
                   key={r.id}
                   type="button"
                   onClick={() => elegirAtajo(r)}
-                  className={`whitespace-nowrap text-left rounded-lg px-3 py-2 text-xs transition-colors ${borradorActivo?.id === r.id ? "bg-blue/15 text-text" : "text-muted hover:text-text hover:bg-white/[0.04]"}`}
+                  className={`whitespace-nowrap text-left rounded-lg px-3 py-2 text-xs transition-colors ${borradorActivo?.id === r.id ? "bg-blue/15 text-text" : "text-muted hover:text-text hover:bg-black/[0.04]"}`}
                 >
                   {r.label}
                 </button>
@@ -171,14 +171,14 @@ export function SelectorFechas({ desde, hasta, rangos, hoy, onAplicar, inactivo,
 
             <div className="p-4 flex-1">
               <div className="flex items-center justify-between mb-2">
-                <button type="button" onClick={() => setMesDer(moverMes(mesDer, -1))} className="rounded-lg p-1.5 text-muted hover:text-text hover:bg-white/[0.06]" aria-label="Ver mes anterior">
+                <button type="button" onClick={() => setMesDer(moverMes(mesDer, -1))} className="rounded-lg p-1.5 text-muted hover:text-text hover:bg-black/[0.06]" aria-label="Ver mes anterior">
                   <ChevronLeft size={16} />
                 </button>
                 <button
                   type="button"
                   onClick={() => setMesDer(moverMes(mesDer, 1))}
                   disabled={mesDer >= hoy.slice(0, 7)}
-                  className="rounded-lg p-1.5 text-muted hover:text-text hover:bg-white/[0.06] disabled:opacity-30 disabled:hover:bg-transparent"
+                  className="rounded-lg p-1.5 text-muted hover:text-text hover:bg-black/[0.06] disabled:opacity-30 disabled:hover:bg-transparent"
                   aria-label="Ver mes siguiente"
                 >
                   <ChevronRight size={16} />

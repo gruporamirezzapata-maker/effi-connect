@@ -99,7 +99,7 @@ export function Tarjeta({ titulo, valor, badge, ayuda, pie, pendiente, children 
   titulo: string; valor: string; badge?: string | null; ayuda?: string; pie?: string; pendiente?: boolean; children?: ReactNode;
 }) {
   return (
-    <div title={ayuda} className={`card flex flex-col p-4 border-t-2 ${pendiente ? "border-t-white/15" : "border-t-blue"}`}>
+    <div title={ayuda} className={`card flex flex-col p-4 border-t-2 ${pendiente ? "border-t-black/15" : "border-t-blue"}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="text-[11px] uppercase tracking-widest font-mono text-muted leading-snug">{titulo}</div>
         {badge && <span className="shrink-0 rounded-full bg-blue/20 text-blue-2 px-2 py-0.5 text-[11px] font-mono font-semibold">{badge}</span>}

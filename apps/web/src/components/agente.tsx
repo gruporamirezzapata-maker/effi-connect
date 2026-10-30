@@ -381,7 +381,7 @@ export function Agente({ cuenta, datos }: { cuenta: string; datos: DatosAuto }) 
               const abierto = abierta === clave;
               return (
                 <Fragment key={clave}>
-                <tr className="align-middle hover:bg-white/[0.02]">
+                <tr className="align-middle hover:bg-black/[0.02]">
                   <td className="px-3 py-2 whitespace-nowrap">
                     <div className="font-mono font-semibold">OV {o.id}</div>
                     <div className="text-[11px] text-muted">{hora(o.fecha)}{o.pedido ? ` · ${o.ecommerce ?? ""} #${o.pedido}` : ""}</div>
@@ -390,7 +390,7 @@ export function Agente({ cuenta, datos }: { cuenta: string; datos: DatosAuto }) 
                     <div className="font-semibold">{o.cliente ?? "—"}</div>
                     <span
                       className="mt-0.5 inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                      style={o.recuperado ? { background: "rgba(180,140,255,.15)", color: "#b48cff" } : { background: "rgba(255,255,255,.05)", color: "var(--muted)" }}
+                      style={o.recuperado ? { background: "rgba(180,140,255,.15)", color: "#b48cff" } : { background: "rgba(17,17,17,.05)", color: "var(--muted)" }}
                     >
                       {o.recuperado ? "Recuperado" : "Principal"}
                     </span>
@@ -419,7 +419,7 @@ export function Agente({ cuenta, datos }: { cuenta: string; datos: DatosAuto }) 
                   </td>
                   <td className="px-3 py-2 whitespace-nowrap font-mono text-xs">{o.guia ?? "—"}</td>
                   <td className="px-3 py-2 min-w-[12rem]">
-                    <span className="inline-block rounded-full px-2.5 py-0.5 text-[11px] font-semibold" style={{ color: est.color, background: "rgba(255,255,255,.05)" }}>
+                    <span className="inline-block rounded-full px-2.5 py-0.5 text-[11px] font-semibold" style={{ color: est.color, background: "rgba(17,17,17,.05)" }}>
                       {o.estado === "sin_remision" && !atrasada(o) ? "Esperando remisión" : est.label}
                     </span>
                     {o.estado === "sin_remision" && <div className="text-[11px] text-muted mt-0.5">hace {duracion(o.minutos)}</div>}
@@ -476,7 +476,7 @@ export function Agente({ cuenta, datos }: { cuenta: string; datos: DatosAuto }) 
                 </tr>
                 {abierto && o.plan && (
                   <tr>
-                    <td colSpan={10} className="px-3 pb-4 bg-white/[0.015]">
+                    <td colSpan={10} className="px-3 pb-4 bg-black/[0.015]">
                       {o.plan.resultado && (
                         <div className="grid lg:grid-cols-2 gap-3 pt-2">
                           <Envio titulo={`Lo que se envió a Effi (${String(o.plan.resultado.paso ?? "")})`} datos={(o.plan.resultado.enviado as Record<string, unknown>) ?? undefined} />
@@ -526,18 +526,18 @@ function Simulacion({ o, cuenta, abierto, onAlternar }: { o: OrdenAuto; cuenta: 
     const res = (o.plan?.resultado ?? {}) as { remision?: { id_transaccion?: string; id?: number }; guia?: { guia?: string } };
     return (
       <div className="text-xs">
-        <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold text-green bg-white/5">✓ Creada por Effi Connect</span>
+        <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold text-green bg-black/5">✓ Creada por Effi Connect</span>
         <div className="text-muted mt-1">RV {res.remision?.id_transaccion ?? res.remision?.id ?? "—"} · guía {res.guia?.guia ?? "—"}</div>
       </div>
     );
   }
   if (o.estado !== "sin_remision" && o.estado !== "sin_guia" && o.plan_estado !== "error") return <span className="text-xs text-muted">—</span>;
   if (!o.plan_estado) return <span className="text-xs text-muted">Aún no simulada</span>;
-  if (o.decision === "ejecutar") return <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold text-blue-2 bg-white/5">Creando en Effi…</span>;
+  if (o.decision === "ejecutar") return <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold text-blue-2 bg-black/5">Creando en Effi…</span>;
   if (o.plan_estado === "error") {
     return (
       <div className="text-xs">
-        <button onClick={onAlternar} className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold text-red bg-white/5 hover:bg-white/10">
+        <button onClick={onAlternar} className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold text-red bg-black/5 hover:bg-black/10">
           {abierto ? <ChevronDown size={12} /> : <ChevronRight size={12} />} Falló al crear
         </button>
         <div className="text-muted mt-1">Mira el error en Estado y las variables al desplegar</div>
@@ -547,7 +547,7 @@ function Simulacion({ o, cuenta, abierto, onAlternar }: { o: OrdenAuto; cuenta: 
   if (o.plan_estado === "revision") {
     return (
       <div className="text-xs">
-        <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold text-amber bg-white/5">Pendiente de revisión</span>
+        <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold text-amber bg-black/5">Pendiente de revisión</span>
         <div className="text-amber mt-1 min-w-[26rem] max-w-[44rem] whitespace-normal">{o.plan_motivo}</div>
       </div>
     );
@@ -562,7 +562,7 @@ function Simulacion({ o, cuenta, abierto, onAlternar }: { o: OrdenAuto; cuenta: 
   if (r.solo_guia) {
     return (
       <div className="text-xs">
-        <button onClick={onAlternar} className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold text-green bg-white/5 hover:bg-white/10">
+        <button onClick={onAlternar} className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold text-green bg-black/5 hover:bg-black/10">
           {abierto ? <ChevronDown size={12} /> : <ChevronRight size={12} />} Guía lista para crear
         </button>
         <div className="mt-1 text-muted">Remisión {String(r.remision)} · remitente {String(r.remitente)}{r.recuperado ? " · Recuperado" : ""}</div>
@@ -573,7 +573,7 @@ function Simulacion({ o, cuenta, abierto, onAlternar }: { o: OrdenAuto; cuenta: 
   }
   return (
     <div className="text-xs">
-      <button onClick={onAlternar} className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold text-green bg-white/5 hover:bg-white/10">
+      <button onClick={onAlternar} className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold text-green bg-black/5 hover:bg-black/10">
         {abierto ? <ChevronDown size={12} /> : <ChevronRight size={12} />} Lista para crear
       </button>
       <div className="mt-1 whitespace-normal">

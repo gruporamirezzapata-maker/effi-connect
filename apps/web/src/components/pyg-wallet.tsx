@@ -102,7 +102,7 @@ function Tabla({ titulo, color, lineas, total, etiquetaTotal, incluida, alternar
               const prom = l.n ? l.monto / l.n : despachos ? l.monto / despachos : null;
               return (
                 <tr key={l.key} className={on ? "" : "opacity-45"}>
-                  <td className="rounded-l-xl border-l-4 bg-white/[0.03] pl-3 pr-2 py-2.5" style={{ borderColor: c }}>
+                  <td className="rounded-l-xl border-l-4 bg-black/[0.03] pl-3 pr-2 py-2.5" style={{ borderColor: c }}>
                     <label className="flex items-center gap-2.5 cursor-pointer">
                       <input type="checkbox" checked={on} onChange={() => alternar(l)} className="size-4 shrink-0 accent-[var(--blue)]" />
                       <span className={`font-semibold ${on ? "" : "line-through"}`}>{l.concepto}</span>
@@ -113,17 +113,17 @@ function Tabla({ titulo, color, lineas, total, etiquetaTotal, incluida, alternar
                     <div className="mt-1.5 h-0.5 rounded-full" style={{ width: `${(Math.abs(l.monto) / max) * 100}%`, background: `color-mix(in srgb, ${c} 60%, transparent)` }} />
                     {l.nota && <div className="text-[11px] text-muted mt-0.5">{l.nota}</div>}
                   </td>
-                  <td className="bg-white/[0.03] px-2 text-right num font-mono text-muted">{l.n != null ? entero(l.n) : "–"}</td>
-                  <td className={`bg-white/[0.03] px-2 text-right num font-semibold ${on ? "" : "line-through"}`}>{$(l.monto)}</td>
-                  <td className="rounded-r-xl bg-white/[0.03] pr-3 text-right num text-muted">{prom != null ? $(prom) : "—"}</td>
+                  <td className="bg-black/[0.03] px-2 text-right num font-mono text-muted">{l.n != null ? entero(l.n) : "–"}</td>
+                  <td className={`bg-black/[0.03] px-2 text-right num font-semibold ${on ? "" : "line-through"}`}>{$(l.monto)}</td>
+                  <td className="rounded-r-xl bg-black/[0.03] pr-3 text-right num text-muted">{prom != null ? $(prom) : "—"}</td>
                 </tr>
               );
             })}
             <tr>
-              <td className="rounded-l-xl border-l-4 bg-white/[0.06] pl-3 py-2.5 font-semibold" style={{ borderColor: color }}>{etiquetaTotal}</td>
-              <td className="bg-white/[0.06]" />
-              <td className="bg-white/[0.06] px-2 text-right num font-semibold">{$(total)}</td>
-              <td className="rounded-r-xl bg-white/[0.06]" />
+              <td className="rounded-l-xl border-l-4 bg-black/[0.06] pl-3 py-2.5 font-semibold" style={{ borderColor: color }}>{etiquetaTotal}</td>
+              <td className="bg-black/[0.06]" />
+              <td className="bg-black/[0.06] px-2 text-right num font-semibold">{$(total)}</td>
+              <td className="rounded-r-xl bg-black/[0.06]" />
             </tr>
           </tbody>
         </table>
@@ -134,7 +134,7 @@ function Tabla({ titulo, color, lineas, total, etiquetaTotal, incluida, alternar
 
 function Indicador({ color, titulo, valor, sub }: { color: string; titulo: string; valor: string; sub: string }) {
   return (
-    <div className="rounded-2xl border border-line border-l-4 bg-white/[0.02] p-4" style={{ borderLeftColor: color }}>
+    <div className="rounded-2xl border border-line border-l-4 bg-black/[0.02] p-4" style={{ borderLeftColor: color }}>
       <div className="text-[11px] uppercase tracking-widest font-mono text-muted">{titulo}</div>
       <div className="num text-3xl font-semibold mt-1">{valor}</div>
       <div className="text-xs font-mono text-muted mt-1">{sub}</div>

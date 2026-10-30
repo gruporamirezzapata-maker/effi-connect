@@ -184,10 +184,10 @@ function GraficaA({ a }: { a: number[] }) {
   const pts = a.map((v, i) => [8 + (i * (w - 16)) / 9, h - 10 - (v / max) * (h - 30)]);
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-auto overflow-visible" aria-hidden>
-      <defs><linearGradient id="dga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#05e901" stopOpacity=".22" /><stop offset="1" stopColor="#05e901" stopOpacity="0" /></linearGradient></defs>
+      <defs><linearGradient id="dga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#e2574c" stopOpacity=".22" /><stop offset="1" stopColor="#e2574c" stopOpacity="0" /></linearGradient></defs>
       <path d={`${linea(pts)} L${pts[9][0]} ${h - 4} L${pts[0][0]} ${h - 4} Z`} fill="url(#dga)" />
-      <path d={linea(pts)} fill="none" stroke="#05e901" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
-      <circle cx={pts[9][0]} cy={pts[9][1]} r="3.8" fill="#141414" stroke="#05e901" strokeWidth="2" />
+      <path d={linea(pts)} fill="none" stroke="#e2574c" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx={pts[9][0]} cy={pts[9][1]} r="3.8" fill="#FBE7E2" stroke="#e2574c" strokeWidth="2" />
     </svg>
   );
 }
@@ -198,15 +198,15 @@ function GraficaB({ dias, a, b }: { dias: string[]; a: number[]; b: number[] }) 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto overflow-visible" aria-hidden>
       {[0, 1, 2, 3].map((k) => { const v = Math.round((max * k) / 3); return (
-        <g key={k}><line x1={L} x2={W - R} y1={Y(v)} y2={Y(v)} stroke="#2a2a2a" /><text x={L - 6} y={Y(v) + 3} textAnchor="end" fontSize="9" fill="#7a7a7a">{v}</text></g>
+        <g key={k}><line x1={L} x2={W - R} y1={Y(v)} y2={Y(v)} stroke="#ecd3cd" /><text x={L - 6} y={Y(v) + 3} textAnchor="end" fontSize="9" fill="#7c6a66">{v}</text></g>
       ); })}
-      {dias.map((d, i) => (i % 2 === 0 || i === 9) && <text key={d} x={X(i)} y={H - 6} textAnchor="middle" fontSize="9" fill="#7a7a7a">{corta(d)}</text>)}
+      {dias.map((d, i) => (i % 2 === 0 || i === 9) && <text key={d} x={X(i)} y={H - 6} textAnchor="middle" fontSize="9" fill="#7c6a66">{corta(d)}</text>)}
       <path d={linea(b.map((v, i) => [X(i), Y(v)]))} fill="none" stroke="#6f6f6f" strokeWidth="1.8" strokeDasharray="4 4" />
-      <path d={linea(a.map((v, i) => [X(i), Y(v)]))} fill="none" stroke="#05e901" strokeWidth="2.2" strokeLinejoin="round" />
+      <path d={linea(a.map((v, i) => [X(i), Y(v)]))} fill="none" stroke="#e2574c" strokeWidth="2.2" strokeLinejoin="round" />
       {oi >= 0 && (
         <g>
-          <line x1={X(oi)} x2={X(oi)} y1={T} y2={H - B} stroke="#05e901" strokeOpacity=".35" strokeDasharray="2 3" />
-          <circle cx={X(oi)} cy={Y(a[oi])} r="3.6" fill="#141414" stroke="#05e901" strokeWidth="2" />
+          <line x1={X(oi)} x2={X(oi)} y1={T} y2={H - B} stroke="#e2574c" strokeOpacity=".35" strokeDasharray="2 3" />
+          <circle cx={X(oi)} cy={Y(a[oi])} r="3.6" fill="#FBE7E2" stroke="#e2574c" strokeWidth="2" />
           <text x={Math.min(Math.max(X(oi), L + 40), W - R - 40)} y={T + 6} textAnchor="middle" fontSize="10" fontWeight="600" fill="#f5f5f5">{corta(dias[oi])} · la más vieja</text>
         </g>
       )}
@@ -285,7 +285,7 @@ function EtiquetaMarca({ m, hoy }: { m?: Marca; hoy: string }) {
     : <span className="text-[11px] uppercase tracking-[0.16em] text-amber">Revisada · sigue sin recoger <span className="normal-case tracking-normal text-muted">({quien}, {horaBogota(m.en)})</span></span>;
 }
 
-const BTN_GRIS = "h-9 rounded-lg bg-[#2e2e2e] px-4 text-[11px] font-semibold uppercase tracking-[0.16em] hover:bg-[#262626] active:scale-[0.97] transition disabled:opacity-40";
+const BTN_GRIS = "h-9 rounded-lg bg-transparent ring-[1.5px] ring-inset ring-text px-4 text-[11px] font-semibold uppercase tracking-[0.16em] hover:bg-black/5 active:scale-[0.97] transition disabled:opacity-40";
 
 // ---------- Pantalla ----------
 export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; error: string | null }) {
@@ -381,7 +381,7 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
 
       <div className="mt-6 space-y-2 text-sm">
         {s.recogidas.length > 0 && <p className="border-l-2 border-green pl-4 py-1">{s.recogidas.length === 1 ? "1 guía de Inter salió" : `${s.recogidas.length} guías de Inter salieron`} de la lista: Effi las muestra pendientes, pero Inter ya las recibió.</p>}
-        {s.recogidas.length === 0 && !s.interHoy && <p className="border-l-2 border-white/30 pl-4 py-1 text-muted">Hoy no hay revisión de Inter: las guías de Inter se muestran como dice Effi.</p>}
+        {s.recogidas.length === 0 && !s.interHoy && <p className="border-l-2 border-black/30 pl-4 py-1 text-muted">Hoy no hay revisión de Inter: las guías de Inter se muestran como dice Effi.</p>}
         {s.incompletas > 0 && <p className="border-l-2 border-amber pl-4 py-1">{s.incompletas} guías no se pudieron completar con el detalle de Effi (marcadas con «…»). Revísalas antes de enviar.</p>}
       </div>
 
@@ -389,7 +389,7 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
       {coord.length > 0 && (
         <section className="mt-12">
           <p className="text-[11px] uppercase tracking-[0.25em] text-muted/60 mb-4">Revisar Coordinadora</p>
-          <div className="h-px bg-white/10 mb-6" />
+          <div className="h-px bg-black/10 mb-6" />
           <div className="flex flex-wrap items-end gap-x-10 gap-y-4">
             <div>
               <div className="num text-5xl font-light leading-none">{recogidasCoord}<span className="text-muted/60 text-3xl"> / {coord.length}</span></div>
@@ -408,7 +408,7 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
           </ol>
           <div className="mt-4 max-w-3xl">
             <textarea value={pegadas} onChange={(e) => setPegadas(e.target.value)} rows={3} placeholder="Pega aquí las guías que ya salieron (una por línea, con comas o como sea)"
-              className="w-full rounded-lg border border-white/10 bg-panel p-3 text-sm outline-none focus:border-blue" aria-label="Guías que ya salieron" />
+              className="w-full rounded-lg border border-black/10 bg-panel p-3 text-sm outline-none focus:border-blue" aria-label="Guías que ya salieron" />
             <div className="mt-2 flex flex-wrap items-center gap-4">
               <button onClick={marcarPegadas} disabled={!listo || validos.length === 0} className="btn-primary h-10 px-6 text-xs disabled:opacity-40">
                 Marcar {validos.length || ""} como recogidas
@@ -436,7 +436,7 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
               <div className="mt-2"><EtiquetaMarca m={marcas[filaActual.guia]} hoy={s.hoy} /></div>
               <div className="mt-5 flex flex-wrap gap-3">
                 <button onClick={() => marcarYSeguir(filaActual.guia, "recogida")} className="btn-primary h-11 px-6 text-xs">Ya la recogieron · siguiente</button>
-                <button onClick={() => marcarYSeguir(filaActual.guia, "sin_recoger")} className="h-11 rounded-lg bg-[#2e2e2e] px-6 text-xs font-semibold uppercase tracking-[0.18em] hover:bg-[#262626] active:scale-[0.97] transition">Sigue sin recoger · siguiente</button>
+                <button onClick={() => marcarYSeguir(filaActual.guia, "sin_recoger")} className="h-11 rounded-lg bg-transparent ring-[1.5px] ring-inset ring-text px-6 text-xs font-semibold uppercase tracking-[0.18em] hover:bg-black/5 active:scale-[0.97] transition">Sigue sin recoger · siguiente</button>
                 <button onClick={() => setActual(null)} className="h-11 px-3 text-xs uppercase tracking-[0.18em] text-muted hover:text-text">Terminar</button>
               </div>
             </div>
@@ -447,10 +447,10 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
       {/* Proveedores */}
       <section className="mt-12">
         <p className="text-[11px] uppercase tracking-[0.25em] text-muted/60 mb-4">Por proveedor</p>
-        <div className="h-px bg-white/10" />
+        <div className="h-px bg-black/10" />
         {s.grupos.length === 0 && <p className="py-10 text-muted">No hay guías pendientes. Todo salió.</p>}
         {s.grupos.map((g, i) => (
-          <details key={g.nombre} className="group border-b border-white/10">
+          <details key={g.nombre} className="group border-b border-black/10">
             <summary className="flex cursor-pointer list-none items-center gap-5 py-6 [&::-webkit-details-marker]:hidden">
               <span className="w-6 text-xs tabular-nums text-muted/50">{String(i + 1).padStart(2, "0")}</span>
               <div className="min-w-0 flex-1">
@@ -466,13 +466,13 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
             <div className="pb-8 sm:pl-11">
               <div className="flex flex-wrap gap-3 mb-5">
                 {!g.propio && <button onClick={() => imagen(g, s.hoy)} className="btn-primary h-11 px-6 text-xs">Imagen para WhatsApp</button>}
-                <button onClick={() => bajarProv(g)} className="h-11 rounded-lg bg-[#2e2e2e] px-6 text-xs font-semibold uppercase tracking-[0.18em] hover:bg-[#262626] active:scale-[0.97] transition">Excel</button>
-                {!g.propio && <button onClick={() => copiar(g)} className="h-11 rounded-lg bg-[#2e2e2e] px-6 text-xs font-semibold uppercase tracking-[0.18em] hover:bg-[#262626] active:scale-[0.97] transition">Copiar mensaje</button>}
+                <button onClick={() => bajarProv(g)} className="h-11 rounded-lg bg-transparent ring-[1.5px] ring-inset ring-text px-6 text-xs font-semibold uppercase tracking-[0.18em] hover:bg-black/5 active:scale-[0.97] transition">Excel</button>
+                {!g.propio && <button onClick={() => copiar(g)} className="h-11 rounded-lg bg-transparent ring-[1.5px] ring-inset ring-text px-6 text-xs font-semibold uppercase tracking-[0.18em] hover:bg-black/5 active:scale-[0.97] transition">Copiar mensaje</button>}
               </div>
               {!g.propio && (
-                <pre className="mb-5 whitespace-pre-wrap rounded-lg border border-white/10 bg-panel p-4 font-sans text-sm text-text/90">{mensaje(g, plantilla)}</pre>
+                <pre className="mb-5 whitespace-pre-wrap rounded-lg border border-black/10 bg-panel p-4 font-sans text-sm text-text/90">{mensaje(g, plantilla)}</pre>
               )}
-              <div className="divide-y divide-white/10 border-y border-white/10">
+              <div className="divide-y divide-black/10 border-y border-black/10">
                 {g.filas.map((f) => (
                   <div key={f.guia} className={`py-3 pl-4 text-sm border-l-2 ${f.vencida ? "border-red bg-red/[0.06]" : "border-transparent"}`}>
                     <div className="flex justify-between gap-3">
@@ -504,13 +504,13 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
       {/* Ajustes */}
       <section className="mt-12">
         <p className="text-[11px] uppercase tracking-[0.25em] text-muted/60 mb-4">Mensaje base</p>
-        <div className="h-px bg-white/10 mb-5" />
+        <div className="h-px bg-black/10 mb-5" />
         <p className="text-sm text-muted mb-3">Usa {"{proveedor}"}, {"{n}"}, {"{antiguo}"} y {"{dias}"}. El cambio vale mientras tengas abierta la página.</p>
         <textarea value={plantilla} onChange={(e) => setPlantilla(e.target.value)} rows={6}
-          className="w-full rounded-lg border border-white/10 bg-panel p-4 text-sm outline-none focus:border-blue" aria-label="Mensaje base" />
+          className="w-full rounded-lg border border-black/10 bg-panel p-4 text-sm outline-none focus:border-blue" aria-label="Mensaje base" />
       </section>
 
-      {aviso && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-blue px-5 py-3 text-sm font-semibold text-[#0a0a0a]" role="status">{aviso}</div>}
+      {aviso && <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-blue px-5 py-3 text-sm font-semibold text-white" role="status">{aviso}</div>}
     </div>
   );
 }

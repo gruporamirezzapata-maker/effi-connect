@@ -49,7 +49,7 @@ export function FiltroMulti({ etiqueta, param, opciones, seleccion }: {
         type="button"
         onClick={() => setAbierto(!abierto)}
         aria-expanded={abierto}
-        className={`flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs transition-colors ${seleccion?.length ? "border-blue/50 bg-blue/15 text-text" : "border-line text-text hover:bg-white/[0.04]"} ${pendiente ? "opacity-60" : ""}`}
+        className={`flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs transition-colors ${seleccion?.length ? "border-blue/50 bg-blue/15 text-text" : "border-line text-text hover:bg-black/[0.04]"} ${pendiente ? "opacity-60" : ""}`}
       >
         <span className={`size-1.5 rounded-full ${seleccion?.length ? "bg-blue-2" : "bg-muted"}`} />
         <span className="max-w-[12rem] truncate">{resumen}</span>
@@ -60,14 +60,14 @@ export function FiltroMulti({ etiqueta, param, opciones, seleccion }: {
           <button
             type="button"
             onClick={() => guardar(null)}
-            className={`w-full text-left rounded-lg px-3 py-2 text-xs ${!seleccion?.length ? "bg-blue/15 text-text" : "text-muted hover:text-text hover:bg-white/[0.04]"}`}
+            className={`w-full text-left rounded-lg px-3 py-2 text-xs ${!seleccion?.length ? "bg-blue/15 text-text" : "text-muted hover:text-text hover:bg-black/[0.04]"}`}
           >
             Todas
           </button>
           <div className="max-h-72 overflow-y-auto mt-1 space-y-0.5">
             {opciones.length === 0 && <p className="text-xs text-muted px-3 py-2">Sin opciones en este periodo.</p>}
             {opciones.map((o) => (
-              <label key={o.valor} className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs cursor-pointer hover:bg-white/[0.04]">
+              <label key={o.valor} className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs cursor-pointer hover:bg-black/[0.04]">
                 <input type="checkbox" checked={activos.includes(o.valor)} onChange={() => alternar(o.valor)} className="accent-[var(--blue)]" />
                 <span className="flex-1 truncate">{o.valor}</span>
                 <span className="text-muted num">{o.guias.toLocaleString("es-CO")}</span>

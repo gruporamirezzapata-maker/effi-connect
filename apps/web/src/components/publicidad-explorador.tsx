@@ -142,7 +142,7 @@ export function ExploradorAds({ anuncios }: { anuncios: AnuncioAds[] }) {
       <td className="text-right num text-muted">{num(metrica(f, "cpconv") as number | null, "cop")}</td>
     </>
   );
-  const sel = "h-10 min-w-0 max-w-full rounded-lg border border-white/15 bg-transparent px-3 text-sm text-text";
+  const sel = "h-10 min-w-0 max-w-full rounded-lg border border-black/15 bg-transparent px-3 text-sm text-text";
 
   if (!anuncios.length) return <Vacio>Todavía no hay datos por anuncio en este periodo. Se llenan solos cada hora desde Meta.</Vacio>;
 
@@ -151,7 +151,7 @@ export function ExploradorAds({ anuncios }: { anuncios: AnuncioAds[] }) {
       <div className="flex flex-wrap gap-2 mb-4" role="tablist" aria-label="Nivel">
         {NIVELES.map((n) => (
           <button key={n.id} role="tab" aria-selected={nivel === n.id} onClick={() => setNivel(n.id)}
-            className={`h-10 rounded-lg px-5 text-xs font-semibold uppercase tracking-[0.16em] transition ${nivel === n.id ? "bg-blue text-[#0a0a0a]" : "bg-[#2e2e2e] text-text hover:bg-[#262626]"}`}>
+            className={`h-10 rounded-lg px-5 text-xs font-semibold uppercase tracking-[0.16em] transition ${nivel === n.id ? "bg-blue text-white" : "bg-transparent ring-[1.5px] ring-inset ring-text text-text hover:bg-black/5"}`}>
             {n.label}
           </button>
         ))}
@@ -189,7 +189,7 @@ export function ExploradorAds({ anuncios }: { anuncios: AnuncioAds[] }) {
         </thead>
         <tbody>
           {filas.map((f) => (
-            <tr key={f.clave} onClick={f.nivel !== "anuncio" ? () => bajar(f) : undefined} className={f.nivel !== "anuncio" ? "cursor-pointer hover:bg-white/[0.03]" : undefined}>
+            <tr key={f.clave} onClick={f.nivel !== "anuncio" ? () => bajar(f) : undefined} className={f.nivel !== "anuncio" ? "cursor-pointer hover:bg-black/[0.03]" : undefined}>
               <td className="max-w-[24rem]">
                 <div className="truncate font-medium" title={f.nombre}>{f.nombre}</div>
                 <div className="truncate text-[11px] text-muted" title={f.padre}>
@@ -200,7 +200,7 @@ export function ExploradorAds({ anuncios }: { anuncios: AnuncioAds[] }) {
               {celdas(f)}
             </tr>
           ))}
-          {filas.length > 1 && <tr className="font-semibold border-t border-white/20"><td>Total ({entero(filas.length)})</td>{celdas(tot)}</tr>}
+          {filas.length > 1 && <tr className="font-semibold border-t border-black/20"><td>Total ({entero(filas.length)})</td>{celdas(tot)}</tr>}
         </tbody>
       </TablaScroll>
       <p className="mt-3 text-xs text-muted max-w-4xl">

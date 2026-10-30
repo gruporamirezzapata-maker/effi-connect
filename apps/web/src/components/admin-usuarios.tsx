@@ -78,7 +78,7 @@ export function AdminUsuarios({ datos, yo }: { datos: DatosAdmin; yo: string }) 
         <div className="mb-3 flex items-center gap-2">
           <UserPlus size={18} className="text-amber" />
           <span className="font-display text-lg font-semibold">Solicitudes por aprobar</span>
-          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${pendientes.length ? "bg-amber/15 text-amber" : "bg-white/5 text-muted"}`}>{pendientes.length}</span>
+          <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${pendientes.length ? "bg-amber/15 text-amber" : "bg-black/5 text-muted"}`}>{pendientes.length}</span>
         </div>
         {pendientes.length ? (
           <div className="space-y-3">
@@ -99,7 +99,7 @@ export function AdminUsuarios({ datos, yo }: { datos: DatosAdmin; yo: string }) 
         <div className="mb-3 flex items-center gap-2">
           <Users size={18} className="text-blue-2" />
           <span className="font-display text-lg font-semibold">Usuarios</span>
-          <span className="rounded-full bg-white/5 px-2 py-0.5 text-xs text-muted">{resto.length}</span>
+          <span className="rounded-full bg-black/5 px-2 py-0.5 text-xs text-muted">{resto.length}</span>
         </div>
         <div className="divide-y divide-line">
           {resto.map((u) => (
@@ -136,7 +136,7 @@ function Persona({ u }: { u: UsuarioAdmin }) {
     <div className="min-w-0">
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-semibold">{u.nombre ?? u.email}</span>
-        <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ color: r.color, background: "rgba(255,255,255,.06)" }}>{r.texto}</span>
+        <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold" style={{ color: r.color, background: "rgba(17,17,17,.06)" }}>{r.texto}</span>
         {!u.activo && <span className="rounded-full bg-red/15 px-2 py-0.5 text-[11px] font-semibold text-red">Desactivado</span>}
       </div>
       <div className="mt-0.5 text-xs text-muted">
@@ -213,7 +213,7 @@ function Editor({ u, cuentas, sociedades: listaSociedades, nuevo = false, onList
   const chip = (on: boolean) =>
     `rounded-xl border px-3 py-2 text-left text-xs transition-colors ${on ? "border-blue bg-blue/25 text-text ring-2 ring-blue/40" : "border-line text-muted opacity-70 hover:opacity-100 hover:text-text"}`;
   return (
-    <div className="mt-3 space-y-3 rounded-xl border border-line bg-white/[0.02] p-3">
+    <div className="mt-3 space-y-3 rounded-xl border border-line bg-black/[0.02] p-3">
       <div>
         <div className="mb-1.5 text-[11px] uppercase tracking-widest font-mono text-muted">1. Rol</div>
         <div className="grid gap-2 sm:grid-cols-3">

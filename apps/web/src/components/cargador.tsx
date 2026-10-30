@@ -96,7 +96,7 @@ export function Cargador() {
         onDragOver={(e) => { e.preventDefault(); setArrastrando(true); }}
         onDragLeave={() => setArrastrando(false)}
         onDrop={(e) => { e.preventDefault(); setArrastrando(false); agregar(e.dataTransfer.files); }}
-        className={`card flex flex-col items-center justify-center gap-2 p-8 text-center cursor-pointer border-dashed transition-colors ${arrastrando ? "border-blue bg-blue/10" : "hover:bg-white/[0.03]"}`}
+        className={`card flex flex-col items-center justify-center gap-2 p-8 text-center cursor-pointer border-dashed transition-colors ${arrastrando ? "border-blue bg-blue/10" : "hover:bg-black/[0.03]"}`}
       >
         <FileUp className="size-7 text-blue-2" aria-hidden />
         <div className="font-semibold">Arrastra aquí los archivos o haz clic para elegirlos</div>

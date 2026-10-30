@@ -24,7 +24,7 @@ export async function Encabezado({ titulo, subtitulo, f, conFechas = true, vario
         <h1 className="fu text-5xl sm:text-6xl lg:text-[5rem] font-light leading-[0.95] tracking-tight" style={{ animationDelay: "0.2s" }}>{sinEmoji(titulo)}</h1>
         <p className="fu text-base text-muted mt-5 max-w-3xl" style={{ animationDelay: "0.4s" }}>{subtitulo}</p>
       </div>
-      <div className="h-px bg-white/10" />
+      <div className="h-px bg-black/10" />
       <Suspense>
         <FiltrosBar cuentas={cuentas} rangos={rangosRapidos(hoy, inicio)} hoy={hoy} minimo={inicio} desde={f.desde} hasta={f.hasta} seleccion={f.cuentas} conFechas={conFechas} varios={varios} />
       </Suspense>

@@ -42,7 +42,7 @@ export function PagosVerificar({ pendientes, decididos, error }: { pendientes: P
   return (
     <div className="space-y-10">
       {aviso && (
-        <div role="status" className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-[#2e2e2e] px-5 py-3 text-sm shadow-lg">{aviso}</div>
+        <div role="status" className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-transparent ring-[1.5px] ring-inset ring-text px-5 py-3 text-sm shadow-lg">{aviso}</div>
       )}
 
       <section>
@@ -84,7 +84,7 @@ export function PagosVerificar({ pendientes, decididos, error }: { pendientes: P
                     <button disabled={enCurso === k} onClick={() => decidir(p, "llego")} className={`${BTN} bg-blue text-black hover:bg-blue-2`}>
                       Llegó la plata
                     </button>
-                    <button disabled={enCurso === k} onClick={() => decidir(p, "no_llego")} className={`${BTN} bg-[#2e2e2e] hover:bg-[#262626]`}>
+                    <button disabled={enCurso === k} onClick={() => decidir(p, "no_llego")} className={`${BTN} bg-transparent ring-[1.5px] ring-inset ring-text hover:bg-black/5`}>
                       No ha llegado
                     </button>
                   </div>
@@ -100,7 +100,7 @@ export function PagosVerificar({ pendientes, decididos, error }: { pendientes: P
         {decididos.length === 0 ? (
           <div className="card p-6 text-sm text-muted">Todavía no hay decisiones.</div>
         ) : (
-          <div className="card divide-y divide-white/5">
+          <div className="card divide-y divide-black/5">
             {decididos.map((p) => {
               const k = `${p.sucursal}-${p.orden_id}`;
               return (

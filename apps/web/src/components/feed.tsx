@@ -112,7 +112,7 @@ export function FeedEstados({ cuentas }: { cuentas: string[] | null }) {
       {error && <p className="text-xs text-amber mb-2" role="status">{error}</p>}
       {eventos == null ? (
         error ? null :
-        <div className="h-72 animate-pulse rounded-xl bg-white/[0.02]" />
+        <div className="h-72 animate-pulse rounded-xl bg-black/[0.02]" />
       ) : !eventos.length ? (
         <p className="text-sm text-muted py-6 text-center">
           {minutos ? `Ningún cambio así en los últimos ${VENTANAS[ventana].label}.` : "Sin cambios de estado todavía."}
@@ -123,7 +123,7 @@ export function FeedEstados({ cuentas }: { cuentas: string[] | null }) {
             const estadoTxt = e.estado_new_efficommerce ?? e.estado_new ?? "—";
             const hora = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", hour: "2-digit", minute: "2-digit", day: "2-digit", month: "short" }).format(new Date(e.fecha_hist_est));
             return (
-              <li key={`${e.cuenta}-${e.guia}-${e.fecha_hist_est}-${i}`} className="flex items-center gap-3 rounded-xl px-2.5 py-2 hover:bg-white/[0.03]">
+              <li key={`${e.cuenta}-${e.guia}-${e.fecha_hist_est}-${i}`} className="flex items-center gap-3 rounded-xl px-2.5 py-2 hover:bg-black/[0.03]">
                 <span className="size-2 rounded-full shrink-0" style={{ background: colorDe(estadoTxt), boxShadow: `0 0 8px ${colorDe(estadoTxt)}` }} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline gap-2">

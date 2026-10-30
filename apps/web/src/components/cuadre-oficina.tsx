@@ -42,7 +42,7 @@ export function CuadreHoy({ c }: { c: Cuadre }) {
         {pasos.map((p) => (
           <div key={p.titulo} className="flex items-center gap-2 flex-1 min-w-[8.5rem]">
             {p.op && <span className="text-lg text-muted font-mono">{p.op}</span>}
-            <div className={`flex-1 rounded-xl px-3 py-2.5 ${p.op === "=" ? "border border-line bg-white/[0.04]" : "bg-white/[0.02]"}`} title={p.ayuda}>
+            <div className={`flex-1 rounded-xl px-3 py-2.5 ${p.op === "=" ? "border border-line bg-black/[0.04]" : "bg-black/[0.02]"}`} title={p.ayuda}>
               <div className="text-[11px] uppercase tracking-wider font-mono text-muted whitespace-nowrap">{p.titulo}</div>
               <div className="num text-2xl font-semibold mt-0.5" style={{ color: p.color }}>{entero(p.valor)}</div>
             </div>
@@ -75,7 +75,7 @@ export function ResumenOficina({ c, dias }: { c: Cuadre; dias: number }) {
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
         {items.map((i) => (
-          <div key={i.titulo} className="rounded-xl bg-white/[0.02] px-3 py-2.5">
+          <div key={i.titulo} className="rounded-xl bg-black/[0.02] px-3 py-2.5">
             <div className="text-[11px] uppercase tracking-wider font-mono text-muted">{i.titulo}</div>
             <div className="num text-2xl font-semibold mt-0.5" style={{ color: i.color }}>{entero(i.valor)}</div>
             <div className="text-[11px] text-muted">{i.sub}</div>

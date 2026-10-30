@@ -166,7 +166,7 @@ export async function ResumenDiario({ f, sp, hoy }: { f: Filtros; sp: SP; hoy: s
             {estados.map((e) => (
               <tr key={e.id}>
                 <td className="sticky left-0 z-10 bg-panel pr-4">
-                  <div className="flex items-center gap-2.5 rounded-l-xl border-l-4 bg-white/[0.03] px-3 py-2.5" style={{ borderColor: `rgb(${e.color})` }}>
+                  <div className="flex items-center gap-2.5 rounded-l-xl border-l-4 bg-black/[0.03] px-3 py-2.5" style={{ borderColor: `rgb(${e.color})` }}>
                     <span className="size-2.5 rounded-full" style={{ background: `rgb(${e.color})`, boxShadow: `0 0 8px rgb(${e.color})` }} />
                     <span className="text-sm font-semibold whitespace-nowrap">{e.label}</span>
                   </div>
@@ -187,16 +187,16 @@ export async function ResumenDiario({ f, sp, hoy }: { f: Filtros; sp: SP; hoy: s
             ))}
             <tr>
               <td className="sticky left-0 z-10 bg-panel pr-4">
-                <div className="rounded-l-xl border-l-4 border-text bg-white/[0.06] px-3 py-2.5 text-sm font-semibold">Total general</div>
+                <div className="rounded-l-xl border-l-4 border-text bg-black/[0.06] px-3 py-2.5 text-sm font-semibold">Total general</div>
               </td>
               {fechas.map((d) => (
-                <td key={d} className="text-center num text-sm font-semibold py-2.5 bg-white/[0.06]">{totalDia(d) ? entero(totalDia(d)) : "—"}</td>
+                <td key={d} className="text-center num text-sm font-semibold py-2.5 bg-black/[0.06]">{totalDia(d) ? entero(totalDia(d)) : "—"}</td>
               ))}
-              <td className={`${COL_TOTAL} py-2.5`}><div className="-mx-4 -my-2.5 px-4 py-2.5 bg-white/[0.08]">{entero(t.pedidos)}</div></td>
+              <td className={`${COL_TOTAL} py-2.5`}><div className="-mx-4 -my-2.5 px-4 py-2.5 bg-black/[0.08]">{entero(t.pedidos)}</div></td>
             </tr>
             <tr>
               <td className="sticky left-0 z-10 bg-panel pr-4">
-                <div className="rounded-l-xl border-l-4 bg-white/[0.03] px-3 py-2.5 text-sm font-semibold" style={{ borderColor: "rgb(255 90 106)" }}>% devolución</div>
+                <div className="rounded-l-xl border-l-4 bg-black/[0.03] px-3 py-2.5 text-sm font-semibold" style={{ borderColor: "rgb(255 90 106)" }}>% devolución</div>
               </td>
               {fechas.map((d) => {
                 const v = totalDia(d) ? devDia(d) : null;
@@ -252,12 +252,12 @@ function Tarjeta({ acento, titulo, valor, sub, delta, pie }: {
   const bueno = delta != null && (delta.valor > 0) === delta.subirEsBueno;
   const txt = delta == null ? "" : igual ? "Igual que el mes pasado" : `${delta.valor > 0 ? "▲ +" : "▼ −"}${Math.abs(delta.valor).toFixed(1).replace(".", ",")}${delta.unidad} vs mes pasado`;
   return (
-    <div className="rounded-2xl border border-line bg-white/[0.02] border-l-4 p-4" style={{ borderLeftColor: acento }}>
+    <div className="rounded-2xl border border-line bg-black/[0.02] border-l-4 p-4" style={{ borderLeftColor: acento }}>
       <div className="text-[11px] uppercase tracking-widest text-muted font-mono">{titulo}</div>
       <div className="num text-3xl font-semibold mt-1">{valor}</div>
       <div className="text-xs text-muted mt-1">{sub}</div>
       {delta && (
-        <span className={`inline-flex items-center gap-1 mt-2 rounded-full px-2.5 py-0.5 text-xs font-medium ${igual ? "bg-white/[0.06] text-muted" : bueno ? "bg-green/15 text-green" : "bg-red/15 text-red"}`}>
+        <span className={`inline-flex items-center gap-1 mt-2 rounded-full px-2.5 py-0.5 text-xs font-medium ${igual ? "bg-black/[0.06] text-muted" : bueno ? "bg-green/15 text-green" : "bg-red/15 text-red"}`}>
           {txt}
         </span>
       )}
@@ -286,7 +286,7 @@ function DiaDoble({ acento, arriba, abajo }: {
     </div>
   );
   return (
-    <div className="rounded-2xl border border-line bg-white/[0.02] border-l-4 p-4 space-y-3" style={{ borderLeftColor: acento }}>
+    <div className="rounded-2xl border border-line bg-black/[0.02] border-l-4 p-4 space-y-3" style={{ borderLeftColor: acento }}>
       {bloque(arriba, false)}
       <div className="border-t border-dashed border-line" />
       {bloque(abajo, true)}

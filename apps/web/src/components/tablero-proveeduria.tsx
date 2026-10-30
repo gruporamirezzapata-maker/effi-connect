@@ -41,7 +41,7 @@ function Top({ titulo, detalle, l, fmt, color = "var(--blue)", max = 10 }: { tit
           {filas.map((f, i) => (
             <div key={i} className="text-xs">
               <div className="flex justify-between gap-3"><span className="truncate" title={f.c}>{f.c}</span><span className="num shrink-0 font-semibold">{fmt(f.v)}</span></div>
-              <div className="mt-1 h-1.5 rounded-full bg-white/5 overflow-hidden"><div className="h-full rounded-full" style={{ width: `${(f.v / tope) * 100}%`, background: color }} /></div>
+              <div className="mt-1 h-1.5 rounded-full bg-black/5 overflow-hidden"><div className="h-full rounded-full" style={{ width: `${(f.v / tope) * 100}%`, background: color }} /></div>
             </div>
           ))}
         </div>

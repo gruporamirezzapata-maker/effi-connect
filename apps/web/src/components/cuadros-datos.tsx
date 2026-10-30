@@ -67,7 +67,7 @@ function Recuadro({ titulo, ayuda, children }: { titulo: string; ayuda: string; 
 }
 
 const TH = "text-[11px] uppercase tracking-widest font-mono text-muted font-medium px-3 pb-1";
-const fila = (color: string) => ({ className: "rounded-l-xl border-l-4 bg-white/[0.03] pl-3 pr-2 py-2.5", style: { borderColor: color } });
+const fila = (color: string) => ({ className: "rounded-l-xl border-l-4 bg-black/[0.03] pl-3 pr-2 py-2.5", style: { borderColor: color } });
 
 function Inconsistencias({ p, $ }: { p: NonNullable<Awaited<ReturnType<typeof kpiPendientes>>["data"]>["inconsistencias"]; $: (v: number) => string }) {
   const esperado = (i: (typeof p)[number]) => i.venta - i.costo - i.flete;
@@ -90,13 +90,13 @@ function Inconsistencias({ p, $ }: { p: NonNullable<Awaited<ReturnType<typeof kp
                 <td {...fila(COLOR_PLATAFORMA[i.plataforma])}>
                   <span className="font-mono font-semibold">{i.guia ?? "—"}</span>
                 </td>
-                <td className="bg-white/[0.03] px-3 whitespace-nowrap">{i.fecha}</td>
-                <td className="bg-white/[0.03] px-3">{i.transportadora ?? "—"}</td>
-                <td className="bg-white/[0.03] px-3 text-right num">{$(i.venta)}</td>
-                <td className="bg-white/[0.03] px-3 text-right num">{$(i.costo)}</td>
-                <td className="bg-white/[0.03] px-3 text-right num">{$(i.flete)}</td>
-                <td className="bg-white/[0.03] px-3 text-right num font-semibold text-green">{$(esperado(i))}</td>
-                <td className="rounded-r-xl bg-white/[0.03] px-3 text-right text-xs max-w-[26rem]">
+                <td className="bg-black/[0.03] px-3 whitespace-nowrap">{i.fecha}</td>
+                <td className="bg-black/[0.03] px-3">{i.transportadora ?? "—"}</td>
+                <td className="bg-black/[0.03] px-3 text-right num">{$(i.venta)}</td>
+                <td className="bg-black/[0.03] px-3 text-right num">{$(i.costo)}</td>
+                <td className="bg-black/[0.03] px-3 text-right num">{$(i.flete)}</td>
+                <td className="bg-black/[0.03] px-3 text-right num font-semibold text-green">{$(esperado(i))}</td>
+                <td className="rounded-r-xl bg-black/[0.03] px-3 text-right text-xs max-w-[26rem]">
                   {i.flete_dev > 0
                     ? `Wallet solo tiene el cargo de flete de devolución (−${$(i.flete_dev)}) y la guía figura entregada — pedir a Effi que retroceda la devolución y liquide la venta`
                     : "Guía entregada sin ningún movimiento de recaudo en el wallet — pedir a Effi que la liquide"}
@@ -104,9 +104,9 @@ function Inconsistencias({ p, $ }: { p: NonNullable<Awaited<ReturnType<typeof kp
               </tr>
             ))}
             <tr>
-              <td className="rounded-l-xl border-l-4 border-text bg-white/[0.06] pl-3 py-2.5 font-semibold" colSpan={6}>TOTAL ({entero(p.length)} {p.length === 1 ? "guía" : "guías"})</td>
-              <td className="bg-white/[0.06] px-3 text-right num font-semibold text-green">{$(total)}</td>
-              <td className="rounded-r-xl bg-white/[0.06]" />
+              <td className="rounded-l-xl border-l-4 border-text bg-black/[0.06] pl-3 py-2.5 font-semibold" colSpan={6}>TOTAL ({entero(p.length)} {p.length === 1 ? "guía" : "guías"})</td>
+              <td className="bg-black/[0.06] px-3 text-right num font-semibold text-green">{$(total)}</td>
+              <td className="rounded-r-xl bg-black/[0.06]" />
             </tr>
           </tbody>
         </table>
@@ -137,21 +137,21 @@ function Proyeccion({ filas, $, bodega }: { filas: NonNullable<Awaited<ReturnTyp
                 <td {...fila(COLOR_PLATAFORMA[x.plataforma])}>
                   <span className="inline-flex items-center gap-2 font-semibold"><span className="size-2 rounded-full" style={{ background: c, boxShadow: `0 0 8px ${c}` }} />{x.plataforma}</span>
                 </td>
-                <td className="bg-white/[0.03] px-3 text-right">{NOMBRE_ESTADO[x.estado] ?? x.estado}</td>
-                <td className="bg-white/[0.03] px-3 text-right num">{entero(x.n)}</td>
-                <td className="bg-white/[0.03] px-3 text-right num" title={x.flete_dev_prom != null ? `${entero(x.n)} × ${$(x.flete_dev_prom)}` : undefined}>{$(x.flete_proyectado)}</td>
-                {bodega && <td className="bg-white/[0.03] px-3 text-right num">{Number(x.fulfillment) ? `${$(Number(x.fulfillment))} (ya en PyG)` : "—"}</td>}
-                <td className="rounded-r-xl bg-white/[0.03] px-3 text-right num text-red">{$(-x.flete_proyectado)}</td>
+                <td className="bg-black/[0.03] px-3 text-right">{NOMBRE_ESTADO[x.estado] ?? x.estado}</td>
+                <td className="bg-black/[0.03] px-3 text-right num">{entero(x.n)}</td>
+                <td className="bg-black/[0.03] px-3 text-right num" title={x.flete_dev_prom != null ? `${entero(x.n)} × ${$(x.flete_dev_prom)}` : undefined}>{$(x.flete_proyectado)}</td>
+                {bodega && <td className="bg-black/[0.03] px-3 text-right num">{Number(x.fulfillment) ? `${$(Number(x.fulfillment))} (ya en PyG)` : "—"}</td>}
+                <td className="rounded-r-xl bg-black/[0.03] px-3 text-right num text-red">{$(-x.flete_proyectado)}</td>
               </tr>
             );
           })}
           {!filas.length && <tr><td colSpan={6} className="text-sm text-muted py-4 text-center">Nada pendiente en el periodo.</td></tr>}
           <tr>
-            <td className="rounded-l-xl border-l-4 border-text bg-white/[0.06] pl-3 py-2.5 font-semibold" colSpan={2}>TOTAL PROYECTADO</td>
-            <td className="bg-white/[0.06] px-3 text-right num font-semibold">{entero(n)}</td>
-            <td className="bg-white/[0.06] px-3 text-right num font-semibold">{$(flete)}</td>
-            {bodega && <td className="bg-white/[0.06] px-3 text-right num font-semibold">{$(full)}</td>}
-            <td className="rounded-r-xl bg-white/[0.06] px-3 text-right num font-semibold text-red">{$(-flete)}</td>
+            <td className="rounded-l-xl border-l-4 border-text bg-black/[0.06] pl-3 py-2.5 font-semibold" colSpan={2}>TOTAL PROYECTADO</td>
+            <td className="bg-black/[0.06] px-3 text-right num font-semibold">{entero(n)}</td>
+            <td className="bg-black/[0.06] px-3 text-right num font-semibold">{$(flete)}</td>
+            {bodega && <td className="bg-black/[0.06] px-3 text-right num font-semibold">{$(full)}</td>}
+            <td className="rounded-r-xl bg-black/[0.06] px-3 text-right num font-semibold text-red">{$(-flete)}</td>
           </tr>
         </tbody>
       </table>
@@ -196,15 +196,15 @@ function Gastos({ titulo, lineas, meses, $, totalLabel, nomina }: {
             {nombres.map((n) => (
               <tr key={n}>
                 <td {...fila("var(--blue-2)")}><span className="font-semibold">{nomina ? "Nómina" : n}</span></td>
-                {nomina && <td className="bg-white/[0.03] px-3">{n}</td>}
-                {cols.map((c) => <td key={c} className="bg-white/[0.03] px-3 text-right num">{$(valor(n, c))}</td>)}
-                <td className="rounded-r-xl bg-white/[0.03] px-3 text-right num font-semibold">{$(cols.reduce((a, c) => a + valor(n, c), 0))}</td>
+                {nomina && <td className="bg-black/[0.03] px-3">{n}</td>}
+                {cols.map((c) => <td key={c} className="bg-black/[0.03] px-3 text-right num">{$(valor(n, c))}</td>)}
+                <td className="rounded-r-xl bg-black/[0.03] px-3 text-right num font-semibold">{$(cols.reduce((a, c) => a + valor(n, c), 0))}</td>
               </tr>
             ))}
             <tr>
-              <td className="rounded-l-xl border-l-4 border-text bg-white/[0.06] pl-3 py-2.5 font-semibold" colSpan={nomina ? 2 : 1}>{totalLabel}</td>
-              {cols.map((c) => <td key={c} className="bg-white/[0.06] px-3 text-right num font-semibold">{$(totalCol(c))}</td>)}
-              <td className="rounded-r-xl bg-white/[0.06] px-3 text-right num font-semibold">{$(total)}</td>
+              <td className="rounded-l-xl border-l-4 border-text bg-black/[0.06] pl-3 py-2.5 font-semibold" colSpan={nomina ? 2 : 1}>{totalLabel}</td>
+              {cols.map((c) => <td key={c} className="bg-black/[0.06] px-3 text-right num font-semibold">{$(totalCol(c))}</td>)}
+              <td className="rounded-r-xl bg-black/[0.06] px-3 text-right num font-semibold">{$(total)}</td>
             </tr>
           </tbody>
         </table>

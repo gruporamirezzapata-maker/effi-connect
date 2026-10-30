@@ -150,7 +150,7 @@ export function AgenteFlotante({ esOwner }: { esOwner: boolean }) {
 
 function Dato({ titulo, valor, color }: { titulo: string; valor: string; color: string }) {
   return (
-    <div className="rounded-lg bg-white/[0.03] px-1 py-1.5">
+    <div className="rounded-lg bg-black/[0.03] px-1 py-1.5">
       <div className="num text-base font-semibold" style={{ color }}>{valor}</div>
       <div className="text-[10px] text-muted">{titulo}</div>
     </div>

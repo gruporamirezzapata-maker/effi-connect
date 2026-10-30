@@ -89,7 +89,7 @@ export function EstadisticasOficina({ e: inicial, cuenta }: { e: Estadisticas; c
               {e.horas.map((h) => (
                 <div key={h.hora} className="grid grid-cols-[3.5rem_1fr_4.5rem_4.5rem] items-center gap-2 text-xs">
                   <span className="font-mono text-muted">{String(h.hora).padStart(2, "0")}:00</span>
-                  <div className="h-2.5 rounded-full bg-white/[0.05] overflow-hidden">
+                  <div className="h-2.5 rounded-full bg-black/[0.05] overflow-hidden">
                     <div className="h-full rounded-full bg-blue" style={{ width: `${(h.llamadas / maxHora) * 100}%` }} />
                   </div>
                   <span className="text-right text-green" title="Contactado">{pct(h.contesto, h.llamadas)} ✅</span>

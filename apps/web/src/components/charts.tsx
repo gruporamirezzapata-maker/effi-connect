@@ -9,9 +9,9 @@ export const COLOR_ESTADO: Record<string, string> = {
   EN_TRANSITO: "#2f7bff",
   EN_OFICINA: "#45c8ff",
   NOVEDAD: "#ffb547",
-  PENDIENTE: "#6b7690",
+  PENDIENTE: "#9b8681",
   INDEMNIZACION: "#b48cff",
-  CANCELADA: "#4b5468",
+  CANCELADA: "#b9a7a2",
 };
 export const NOMBRE_ESTADO: Record<string, string> = {
   ENTREGADO: "Entregada",
@@ -27,9 +27,9 @@ const ORDEN = ["ENTREGADO", "EN_TRANSITO", "EN_OFICINA", "NOVEDAD", "PENDIENTE",
 
 const ejeX = (f: string) => `${f.slice(8, 10)}/${f.slice(5, 7)}`;
 const tooltipStyle = {
-  contentStyle: { background: "#0e1420", border: "1px solid rgb(255 255 255 / 0.1)", borderRadius: 12, fontSize: 12 },
-  labelStyle: { color: "#8a94a8" },
-  cursor: { fill: "rgb(255 255 255 / 0.04)" },
+  contentStyle: { background: "#ffffff", border: "1px solid rgb(17 17 17 / 0.1)", borderRadius: 12, fontSize: 12 },
+  labelStyle: { color: "#7c6a66" },
+  cursor: { fill: "rgb(17 17 17 / 0.04)" },
 };
 
 export function GuiasPorDia({ filas }: { filas: { fecha: string; estado_u: string; guias: number }[] }) {
@@ -45,11 +45,11 @@ export function GuiasPorDia({ filas }: { filas: { fecha: string; estado_u: strin
     <div className="h-72">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ left: -12, right: 4, top: 4 }}>
-          <CartesianGrid vertical={false} stroke="rgb(255 255 255 / 0.06)" />
-          <XAxis dataKey="fecha" tickFormatter={ejeX} tick={{ fill: "#8a94a8", fontSize: 11 }} axisLine={false} tickLine={false} minTickGap={12} />
-          <YAxis tick={{ fill: "#8a94a8", fontSize: 11 }} axisLine={false} tickLine={false} />
+          <CartesianGrid vertical={false} stroke="rgb(17 17 17 / 0.06)" />
+          <XAxis dataKey="fecha" tickFormatter={ejeX} tick={{ fill: "#7c6a66", fontSize: 11 }} axisLine={false} tickLine={false} minTickGap={12} />
+          <YAxis tick={{ fill: "#7c6a66", fontSize: 11 }} axisLine={false} tickLine={false} />
           <Tooltip {...tooltipStyle} labelFormatter={(l) => ejeX(String(l))} formatter={(v, n) => [Number(v).toLocaleString("es-CO"), NOMBRE_ESTADO[String(n)] ?? n]} />
-          <Legend formatter={(v) => <span style={{ color: "#8a94a8", fontSize: 12 }}>{NOMBRE_ESTADO[v] ?? v}</span>} iconType="circle" iconSize={8} />
+          <Legend formatter={(v) => <span style={{ color: "#7c6a66", fontSize: 12 }}>{NOMBRE_ESTADO[v] ?? v}</span>} iconType="circle" iconSize={8} />
           {estados.map((e, i) => (
             <Bar key={e} dataKey={e} stackId="a" fill={COLOR_ESTADO[e]} radius={i === estados.length - 1 ? [4, 4, 0, 0] : 0} maxBarSize={28} />
           ))}
@@ -83,9 +83,9 @@ export function FlujoWallet({ filas, moneda }: { filas: { fecha: string; grupo: 
               <stop offset="100%" stopColor="#ff5a6a" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid vertical={false} stroke="rgb(255 255 255 / 0.06)" />
-          <XAxis dataKey="fecha" tickFormatter={ejeX} tick={{ fill: "#8a94a8", fontSize: 11 }} axisLine={false} tickLine={false} minTickGap={12} />
-          <YAxis tickFormatter={(v) => moneda(Number(v))} tick={{ fill: "#8a94a8", fontSize: 11 }} axisLine={false} tickLine={false} width={70} />
+          <CartesianGrid vertical={false} stroke="rgb(17 17 17 / 0.06)" />
+          <XAxis dataKey="fecha" tickFormatter={ejeX} tick={{ fill: "#7c6a66", fontSize: 11 }} axisLine={false} tickLine={false} minTickGap={12} />
+          <YAxis tickFormatter={(v) => moneda(Number(v))} tick={{ fill: "#7c6a66", fontSize: 11 }} axisLine={false} tickLine={false} width={70} />
           <Tooltip {...tooltipStyle} labelFormatter={(l) => ejeX(String(l))} formatter={(v, n) => [moneda(Number(v)), n === "ingreso" ? "Ingresos" : "Egresos"]} />
           <Area type="monotone" dataKey="ingreso" stroke="#2fd28f" strokeWidth={2} fill="url(#gIng)" />
           <Area type="monotone" dataKey="egreso" stroke="#ff5a6a" strokeWidth={2} fill="url(#gEgr)" />
@@ -118,9 +118,9 @@ export function GastoPorDia({ filas, paises }: {
     <div className="h-72">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ left: 0, right: 4, top: 4 }}>
-          <CartesianGrid vertical={false} stroke="rgb(255 255 255 / 0.06)" />
-          <XAxis dataKey="fecha" tickFormatter={ejeX} tick={{ fill: "#8a94a8", fontSize: 11 }} axisLine={false} tickLine={false} minTickGap={12} />
-          <YAxis tickFormatter={(v) => compacta("COP")(Number(v))} tick={{ fill: "#8a94a8", fontSize: 11 }} axisLine={false} tickLine={false} width={64} />
+          <CartesianGrid vertical={false} stroke="rgb(17 17 17 / 0.06)" />
+          <XAxis dataKey="fecha" tickFormatter={ejeX} tick={{ fill: "#7c6a66", fontSize: 11 }} axisLine={false} tickLine={false} minTickGap={12} />
+          <YAxis tickFormatter={(v) => compacta("COP")(Number(v))} tick={{ fill: "#7c6a66", fontSize: 11 }} axisLine={false} tickLine={false} width={64} />
           <Tooltip
             {...tooltipStyle}
             labelFormatter={(l) => ejeX(String(l))}
@@ -131,7 +131,7 @@ export function GastoPorDia({ filas, paises }: {
               return [`${exacta("COP")(Number(v))}${enLocal}`, p?.nombre ?? String(n)];
             }}
           />
-          <Legend formatter={(v) => <span style={{ color: "#8a94a8", fontSize: 12 }}>{pais(String(v))?.nombre ?? v}</span>} iconType="circle" iconSize={8} />
+          <Legend formatter={(v) => <span style={{ color: "#7c6a66", fontSize: 12 }}>{pais(String(v))?.nombre ?? v}</span>} iconType="circle" iconSize={8} />
           {paises.map((p, i) => (
             <Bar key={p.cuenta} dataKey={p.cuenta} stackId="a" fill={p.color} radius={i === paises.length - 1 ? [4, 4, 0, 0] : 0} maxBarSize={28} />
           ))}

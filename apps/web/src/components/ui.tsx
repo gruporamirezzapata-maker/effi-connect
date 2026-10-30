@@ -4,7 +4,7 @@ import { COLOR_SEMAFORO, type Semaforo } from "@/lib/paises";
 export function Logo({ className = "" }: { className?: string }) {
   return (
     <span className={`inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue ${className}`} aria-hidden>
-      <svg viewBox="0 0 24 24" className="size-[18px]" fill="none" stroke="#0a0a0a" strokeWidth="2.4" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" className="size-[18px]" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinejoin="round">
         <path d="M12 3l8 4.6v8.8L12 21l-8-4.6V7.6z" />
       </svg>
     </span>
@@ -66,7 +66,7 @@ export function TablaScroll({ children }: { children: ReactNode }) {
 
 export function Barra({ valor, color = "var(--blue)" }: { valor: number; color?: string }) {
   return (
-    <div className="h-1.5 w-20 rounded-full bg-white/5 overflow-hidden">
+    <div className="h-1.5 w-20 rounded-full bg-black/5 overflow-hidden">
       <div className="h-full rounded-full" style={{ width: `${Math.max(0, Math.min(1, valor)) * 100}%`, background: color }} />
     </div>
   );
