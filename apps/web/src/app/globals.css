@@ -4,8 +4,10 @@
    entradas escalonadas. Coral = marca y acciones; las alertas usan un rojo y un ámbar oscuros aparte para no confundirse. */
 :root {
   --bg: #f6e2de;
-  --panel: #fbe7e2;
-  --panel-2: #f2cfcb;
+  --panel: #f6d6d0;
+  --panel-2: #fbe7e2;
+  --hoja: #fbe7e2;
+  --barra: #fdbdb4;
   --line: rgb(17 17 17 / 0.08);
   --line-strong: rgb(17 17 17 / 0.16);
   --text: #111111;
@@ -75,6 +77,7 @@ h1 { font-weight: 400 !important; -webkit-text-stroke: 0.6px currentColor; }
   animation: dcRiseSm 0.85s var(--ease) backwards;
 }
 .card .card { box-shadow: none; animation: none; background: var(--panel-2); }
+.hoja .card { box-shadow: 0 18px 40px -26px rgb(190 120 110 / 0.45); }
 :is(.grid, .space-y-3, .space-y-4, .space-y-6, .space-y-10) > .card:nth-child(2) { animation-delay: 0.08s; }
 :is(.grid, .space-y-3, .space-y-4, .space-y-6, .space-y-10) > .card:nth-child(3) { animation-delay: 0.16s; }
 :is(.grid, .space-y-3, .space-y-4, .space-y-6, .space-y-10) > .card:nth-child(4) { animation-delay: 0.24s; }
@@ -122,6 +125,40 @@ input, select, textarea { background-color: #ffffff; }
 @media (prefers-reduced-motion: reduce) {
   .fu, .card, .dc-pop, .dc-left, .dc-fade { animation: none !important; }
 }
+
+
+/* 📱 Marco tipo iPhone 15 Pro: pantalla coral con esquinas de 44 px, isla dinámica, barra de estado, barra superior
+   con las pestañas y la hoja durazno (esquinas de 60 px arriba) donde vive el contenido. */
+.marco {
+  position: relative;
+  background: var(--barra);
+  border-radius: 44px;
+  box-shadow: 0 30px 60px rgb(190 120 110 / 0.28);
+  overflow: clip;
+  animation: dcScale 1s var(--ease) backwards;
+}
+@keyframes dcScale { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: none; } }
+.isla {
+  position: absolute; top: 11px; left: 50%; translate: -50% 0;
+  width: 120px; height: 35px; border-radius: 22px; background: #000; z-index: 2;
+}
+.hoja {
+  background: var(--hoja);
+  border-radius: 60px 60px 0 0;
+  margin-top: 26px;
+  min-height: 70vh;
+}
+.indicador {
+  position: absolute; bottom: 8px; left: 50%; translate: -50% 0;
+  width: 134px; height: 5px; border-radius: 100px; background: rgb(0 0 0 / 0.28);
+}
+.pestanas { scrollbar-width: none; }
+.pestanas::-webkit-scrollbar { display: none; }
+@media (max-width: 639px) {
+  .marco { border-radius: 0; box-shadow: none; }
+  .hoja { border-radius: 40px 40px 0 0; margin-top: 20px; }
+}
+@media (prefers-reduced-motion: reduce) { .marco { animation: none; } }
 
 /* Visualizaciones pensadas para fondo oscuro (red y mapa en vivo): van dentro de una pantalla oscura redondeada. */
 .pantalla {
