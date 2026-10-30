@@ -38,7 +38,7 @@ export default async function ProveeduriaPage({ searchParams }: PageProps<"/prov
         {cuentas.map((c) => (
           <Link key={c} href={href(c, periodo)} className={chip(c === cuenta)}>{infoCuenta(c).bandera} {infoCuenta(c).nombre}</Link>
         ))}
-        <div className="ml-auto inline-flex rounded-xl border border-line bg-white/[0.02] p-0.5 text-xs">
+        <div className="ml-auto inline-flex rounded-xl border border-line bg-black/[0.02] p-0.5 text-xs">
           {PERIODOS.map((p) => (
             <Link key={p.id} href={href(cuenta ?? "", p.id)}
               className={`rounded-lg px-3 py-1 font-semibold transition-colors ${p.id === periodo ? "bg-blue/25 text-text" : "text-muted hover:text-text"}`}>{p.label}</Link>
