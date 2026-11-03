@@ -10,7 +10,7 @@ export type GuiaDespacho = {
   tipo_envio?: string; estado?: string; articulos?: string; contenido?: string; articulos_incompletos?: boolean; por_aprobar?: boolean;
 };
 export type DatosDespachos = {
-  ok: boolean; hoy?: string; generado?: string; inter_revisado_hoy?: boolean; recogidas?: string[]; guias?: GuiaDespacho[];
+  ok: boolean; hoy?: string; generado?: string; minutos_desde_generado?: number | null; inter_revisado_hoy?: boolean; recogidas?: string[]; guias?: GuiaDespacho[];
 };
 
 type Fila = {
@@ -58,7 +58,7 @@ function construir(d: DatosDespachos) {
     const f = mapa[n].sort((a, b) => b.horas - a.horas);
     return { nombre: n, propio: n === PROPIO, filas: f, max: f[0].dias, antiguo: f[0].fecha, vencidas: f.filter((x) => x.vencida).length };
   }).sort((a, b) => (Number(a.propio) - Number(b.propio)) || (b.vencidas - a.vencidas) || (b.max - a.max));
-  return { hoy, todas, grupos, incompletas, recogidas: d.recogidas ?? [], interHoy: !!d.inter_revisado_hoy, generado: d.generado ?? "" };
+  return { hoy, todas, grupos, incompletas, recogidas: d.recogidas ?? [], interHoy: !!d.inter_revisado_hoy, generado: d.generado ?? "", minutos: d.minutos_desde_generado ?? null };
 }
 
 function mensaje(g: Grupo, plantilla: string) {
@@ -383,6 +383,7 @@ export function DespachosApp({ datos, error }: { datos: DatosDespachos | null; e
         {s.recogidas.length > 0 && <p className="border-l-2 border-green pl-4 py-1">{s.recogidas.length === 1 ? "1 guía de Inter salió" : `${s.recogidas.length} guías de Inter salieron`} de la lista: Effi las muestra pendientes, pero Inter ya las recibió.</p>}
         {s.recogidas.length === 0 && !s.interHoy && <p className="border-l-2 border-black/30 pl-4 py-1 text-muted">Hoy no hay revisión de Inter: las guías de Inter se muestran como dice Effi.</p>}
         {s.incompletas > 0 && <p className="border-l-2 border-amber pl-4 py-1">{s.incompletas} guías no se pudieron completar con el detalle de Effi (marcadas con «…»). Revísalas antes de enviar.</p>}
+        {s.minutos != null && s.minutos > 45 && <p className="border-l-2 border-amber pl-4 py-1">Datos de hace {s.minutos >= 120 ? `${Math.floor(s.minutos / 60)} h` : `${s.minutos} min`}: se actualizan cada 30 min entre 7:00 a. m. y 8:30 p. m.</p>}
       </div>
 
       {/* Revisión de Coordinadora */}
