@@ -1,23 +1,33 @@
 import { Suspense } from "react";
-import { exigirModulo } from "@/lib/supabase/server";
+import { createClient, exigirModulo } from "@/lib/supabase/server";
 import { DespachosApp, type DatosDespachos } from "@/components/despachos";
 
 // 📦 Despachos: guías pendientes por despachar, por proveedor, con el reporte en Excel del formato de siempre,
-// la imagen para WhatsApp y la revisión de Inter Rapidísimo. Los datos los arma n8n (Effi + Inter) y se piden desde el
-// servidor: la dirección con su clave vive solo en la variable DESPACHOS_URL de Vercel, nunca en el navegador.
+// la imagen para WhatsApp y la revisión de Inter Rapidísimo. El flujo principal de n8n arma la lista cada 30 min
+// (7:00–20:30) y la guarda en Supabase (despachos_snapshot). Aquí solo se lee con la sesión del usuario:
+// abrir la página no consulta Effi ni n8n, y no hay clave en ningún enlace.
 export const dynamic = "force-dynamic";
 
 async function traer(): Promise<{ datos: DatosDespachos | null; error: string | null }> {
-  const url = process.env.DESPACHOS_URL;
-  if (!url) return { datos: null, error: "Falta configurar DESPACHOS_URL en Vercel." };
-  try {
-    const r = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(90_000) });
-    const d = (await r.json().catch(() => null)) as DatosDespachos | null;
-    if (!d || d.ok !== true) return { datos: null, error: "El servidor de despachos no respondió bien. Intenta de nuevo." };
-    return { datos: d, error: null };
-  } catch {
-    return { datos: null, error: "Effi se demoró demasiado. Intenta de nuevo en un momento." };
-  }
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("despachos_snapshot").select("generado_en, datos").eq("id", 1).maybeSingle();
+  if (error) return { datos: null, error: "No se pudo leer la lista de despachos. Intenta de nuevo en un momento." };
+  if (!data) return { datos: null, error: "Todavía no hay datos de despachos: se generan cada 30 min entre 7:00 a. m. y 8:30 p. m." };
+  const d = (data.datos ?? {}) as DatosDespachos;
+  const gen = new Date(data.generado_en as string);
+  const ms = Math.max(0, Date.now() - gen.getTime());
+  const extra = Math.floor(ms / 3_600_000);
+  return {
+    datos: {
+      ...d,
+      ok: true,
+      hoy: new Date().toLocaleDateString("en-CA", { timeZone: "America/Bogota" }),
+      generado: gen.toLocaleString("sv-SE", { timeZone: "America/Bogota" }).slice(0, 16),
+      minutos_desde_generado: Math.floor(ms / 60_000),
+      guias: (d.guias ?? []).map((g) => ({ ...g, horas: (g.horas ?? 0) + extra })),
+    },
+    error: null,
+  };
 }
 
 async function Contenido() {
